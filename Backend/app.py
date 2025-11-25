@@ -25,7 +25,7 @@ from adminApi.update_staff_data import blp as AdminUpdateStaffBlueprint
 
 app = Flask(__name__)
 
-CORS(app, resources={r"/*": {"origins": ["https://swadisht-bhojan-jomq.vercel.app"]}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": ["https://desi-delivery.vercel.app"]}}, supports_credentials=True)
 
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['API_TITLE'] = 'Food Ordering System'
