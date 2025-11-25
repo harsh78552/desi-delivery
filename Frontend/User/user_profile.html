@@ -97,7 +97,7 @@
         } catch { redirectToLogin(); }
     }
 
-    function goBack() { window.location.href = "index.html"; }
+    function goBack() { window.location.href = "menu.html"; }
 
     function enableEdit(){
         document.querySelectorAll('#profileForm input, #profileForm textarea').forEach(el=>{
@@ -133,7 +133,7 @@
         const container = document.getElementById("profileContainer");
         const loading = document.getElementById("loading");
         try{
-            const res = await fetch("https://restaurantfoodorderingsystem-6.onrender.com/user-profile", {
+            const res = await fetch(" https://desi-delivery.onrender.com/user-profile", {
                 headers: { "Authorization": "Bearer " + token, "Content-Type":"application/json" }
             });
             if(res.ok){

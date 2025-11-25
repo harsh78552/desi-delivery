@@ -106,7 +106,7 @@
             card.querySelector(".delete-btn").onclick = async () => {
                 if (!confirm(`Delete ${item.food_name}?`)) return;
                 try {
-                    const res = await fetch("https://restaurantfoodorderingsystem-6.onrender.com/delete-foodItem", {
+                    const res = await fetch(" https://desi-delivery.onrender.com/delete-foodItem", {
                         method:"DELETE",
                         headers: { "Content-Type":"application/json", Authorization:"Bearer "+token },
                         body: JSON.stringify(item)
