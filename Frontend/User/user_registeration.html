@@ -2,264 +2,184 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Menu</title>
+    <title>User Registration - Vyanjanam</title>
+    <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+
+    <meta name="description"
+          content="Register as a user on Vyanjanam to enjoy our Indian cuisine. Update your contact and address details easily.">
+    <meta name="keywords" content="Vyanjanam, User Registration, Indian Restaurant, Sign Up, User Account">
+    <meta name="robots" content="index, follow">
+
+    <script type="application/ld+json" id="json-ld">
+        {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "",
+            "url": "",
+            "description": "User registration page for Vyanjanam. Users can create an account and update their details.",
+            "email": "",
+            "telephone": "",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "",
+                "addressLocality": "",
+                "postalCode": "",
+                "addressCountry": "IN"
+            }
+        }
+    </script>
+
     <style>
         body {
-            font-family: Arial;
-            padding: 0;
-            margin: 0;
-            background: #f2f2f2;
+          font-family: Arial, sans-serif;
+          background: #f7f7f7;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          padding: 40px;
         }
-
-        /* NAVBAR (Amazon style) */
-        .navbar {
-            width: 100%;
-            background: #131921;
-            color: white;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .container {
+          background: #fff;
+          padding: 25px 30px;
+          border-radius: 10px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          max-width: 500px;
+          width: 100%;
         }
-
-        .nav-left {
-            font-size: 22px;
-            font-weight: bold;
-            letter-spacing: 1px;
+        h1 { display: none; } /* For SEO */
+        .container h2 {
+          text-align: center;
+          margin-bottom: 20px;
+          color: #333;
         }
-
-        .nav-categories {
-            display: flex;
-            gap: 20px;
-            margin-left: 40px;
+        form { display: grid; gap: 15px; }
+        label { font-weight: bold; }
+        input, textarea {
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 6px;
+          font-size: 14px;
+          width: 100%;
         }
-
-        .nav-categories span {
-            cursor: pointer;
-            padding: 6px 10px;
-            border-radius: 4px;
-            transition: 0.2s;
+        button {
+          padding: 12px;
+          background: #007bff;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          font-size: 16px;
+          cursor: pointer;
         }
-
-        .nav-categories span:hover {
-            background: #232f3e;
+        button:hover { background: #0056b3; }
+        .message {
+          text-align: center;
+          font-weight: bold;
+          margin-top: 15px;
         }
-
-        .nav-right {
-            display: flex;
-            gap: 15px;
-        }
-
-        .nav-right button {
-            padding: 6px 12px;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .profile-btn { background: #ff9900; }
-        .about-btn { background: #ffa31a; }
-        .logout-btn { background: #e65c00; color: white; }
-
-        /* CATEGORY BOXES */
-        .category-box {
-            background: white;
-            padding: 15px;
-            margin: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px #ccc;
-        }
-
-        .food-card {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            background: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .food-card:hover {
-            box-shadow: 0 4px 10px #bbb;
-        }
-
-        .food-card img {
-            width: 120px;
-            height: 90px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        /* Toast messages */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #333;
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 6px;
-            opacity: 0.95;
-            font-size: 14px;
-            z-index: 1000;
-            animation: fadeOut 3s forwards;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-
-        .toast.success { background: #28a745; }
-        .toast.error { background: #dc3545; }
-        .toast.info { background: #007bff; }
-
-        @keyframes fadeOut {
-            0% { opacity: 0.95; }
-            80% { opacity: 0.95; }
-            100% { opacity: 0; }
-        }
-
     </style>
 </head>
 <body>
+<div class="container">
+    <h1>Vyanjanam User Registration</h1>
+    <h2>User Registration</h2>
+    <form id="registerForm">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required>
 
-<div class="navbar">
-    <div class="nav-left">Food Ordering</div>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
 
-    <div class="nav-categories" id="category-list">
-        <!-- Categories will auto-load here -->
-    </div>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" minlength="6" required>
 
-    <div class="nav-right">
-        <button class="profile-btn" onclick="goProfile()">Profile</button>
-        <button class="about-btn" onclick="goAbout()">About</button>
-        <button class="logout-btn" onclick="logout()">Logout</button>
-    </div>
+        <label for="contact">Contact</label>
+        <input type="tel" id="contact" name="contact" pattern="[0-9]{10}" placeholder="10-digit number" required>
+
+        <label for="permanent_address">Permanent Address</label>
+        <textarea id="permanent_address" name="permanent_address" rows="2" required></textarea>
+
+        <label for="residential_address">Residential Address</label>
+        <textarea id="residential_address" name="residential_address" rows="2"></textarea>
+
+        <label for="landmark">Landmark</label>
+        <input type="text" id="landmark" name="landmark" required>
+
+        <label for="pin_code">PIN Code</label>
+        <input type="text" id="pin_code" name="pin_code" pattern="[0-9]{6}" required>
+
+        <button type="submit">Register</button>
+    </form>
+    <div class="message" id="message"></div>
 </div>
 
-<h2 style="padding-left: 25px;">Menu Items</h2>
-<div id="menu-container" style="padding: 20px;">Loading...</div>
-
 <script>
-    // Load Menu
-    async function loadMenu() {
-        const token = localStorage.getItem("userToken");
+    const form = document.getElementById("registerForm");
+    const message = document.getElementById("message");
+    const jsonLdScript = document.getElementById("json-ld");
 
-        if (!token) {
-            showToast("Please login first!", "error");
-            document.getElementById("menu-container").innerHTML =
-                "<b>No token found. Please login first.</b>";
-            return;
+    // Function to update JSON-LD dynamically
+    function updateJSONLD(user) {
+        const jsonLd = {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": user.name || "",
+            "url": "http://yourwebsite.com/user-registration",
+            "description": "Registered user on Vyanjanam website.",
+            "email": user.email || "",
+            "telephone": user.contact || "",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": user.residential_address || "",
+                "addressLocality": user.permanent_address || "",
+                "postalCode": user.pin_code || "",
+                "addressCountry": "IN"
+            }
+        };
+        jsonLdScript.textContent = JSON.stringify(jsonLd);
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        name: form.name.value,
+        email: form.email.value,
+        password: form.password.value,
+        contact: form.contact.value,
+        permanent_address: form.permanent_address.value,
+        residential_address: form.residential_address.value,
+        landmark: form.landmark.value,
+        pin_code: form.pin_code.value,
+      };
+
+      try {
+        const res = await fetch(" https://desi-delivery.onrender.com/user-registration", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+            const responseData = await res.json();
+            message.style.color = "green";
+            message.textContent = responseData.message || "Registration successful!";
+            form.reset();
+
+            // Update JSON-LD after successful registration
+            updateJSONLD(data);
+
+            setTimeout(() => { message.textContent = ""; }, 2000);
+        } else {
+            const errorData = await res.json();
+            message.style.color = "red";
+            message.textContent = errorData.message || "Error registering user.";
+            setTimeout(() => { message.textContent = ""; }, 2000);
         }
-
-        try {
-            const res = await fetch("https://restaurantfoodorderingsystem-6.onrender.com/menu", {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + token,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            const menuData = await res.json();
-            const container = document.getElementById("menu-container");
-            const navbarCategories = document.getElementById("category-list");
-
-            container.innerHTML = "";
-            navbarCategories.innerHTML = "";
-
-            menuData.forEach(cat => {
-                // Navbar category
-                const catTab = document.createElement("span");
-                catTab.innerText = cat.category;
-                catTab.onclick = () => scrollToCategory(cat.category);
-                navbarCategories.appendChild(catTab);
-
-                // Category box
-                const box = document.createElement("div");
-                box.classList.add("category-box");
-                box.id = cat.category.replace(/\s+/g, "-");
-
-                const itemsHTML = cat.items.map(item => `
-                    <div class="food-card" onclick="viewFoodDetail('${item._id}')">
-                        <img src="${item.image_url}" alt="">
-                        <div>
-                            <h4>${item.food_name}</h4>
-                            <p>${item.descriptions}</p>
-                            <b>Price: ${item.price}</b><br>
-                            <small>Category: ${item.sub_category}</small>
-                        </div>
-                    </div>
-                `).join("");
-
-                box.innerHTML = `<h3>${cat.category}</h3>${itemsHTML}`;
-                container.appendChild(box);
-            });
-
-        } catch (err) {
-            console.error(err);
-            showToast("Error loading menu.", "error");
-            document.getElementById("menu-container").innerHTML = "<b>Error loading menu.</b>";
-        }
-    }
-
-    // Scroll to category section
-    function scrollToCategory(catName) {
-        const id = catName.replace(/\s+/g, "-");
-        const section = document.getElementById(id);
-        section.scrollIntoView({ behavior: "smooth" });
-    }
-
-    // View food detail
-    function viewFoodDetail(foodId) {
-        localStorage.setItem("selectedFoodId", foodId);
-        window.location.href = "food_detail.html";
-    }
-
-    // Profile button
-    function goProfile() {
-        const token = localStorage.getItem("userToken");
-        if (!token) {
-            showToast("Please login first!", "error");
-            window.location.href = "user_login.html";
-            return;
-        }
-        window.location.href = "profile.html";
-    }
-
-    // About button
-    function goAbout() {
-         const token = localStorage.getItem("userToken");
-        if (!token) {
-            showToast("Please login first!", "error");
-            window.location.href = "user_login.html";
-            return;
-        }
-        window.location.href = "about_us.html";
-    }
-
-    // Logout
-    function logout() {
-        localStorage.removeItem("userToken");
-        showToast("Logged out successfully!", "success");
-        setTimeout(() => window.location.href = "user_login.html", 1000);
-    }
-
-    // Toast function
-    function showToast(message, type="info") {
-        const toast = document.createElement("div");
-        toast.className = `toast ${type}`;
-        toast.innerText = message;
-        document.body.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
-    }
-
-    loadMenu();
+      } catch (err) {
+        message.style.color = "red";
+        message.textContent = "Network error.";
+      }
+    });
 </script>
-
 </body>
 </html>
