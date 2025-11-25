@@ -154,7 +154,7 @@
         }
 
         try {
-            const res = await fetch("https://restaurantfoodorderingsystem-6.onrender.com/menu", {
+            const res = await fetch("https://desi-delivery.onrender.com/menu", {
                 method: "GET",
                 headers: {
                     "Authorization": "Bearer " + token,
@@ -230,9 +230,13 @@
 
     // About button
     function goAbout() {
-        showToast("Food Ordering System v1.0 by Harsh Tiwari", "info");
-        // Or redirect to about_us.html if you have a page
-        // window.location.href = "about_us.html";
+        const token = localStorage.getItem("userToken");
+        if (!token) {
+            showToast("Please login first!", "error");
+            window.location.href = "user_login.html";
+            return;
+        }
+        window.location.href = "about_us.html";
     }
 
     // Logout
