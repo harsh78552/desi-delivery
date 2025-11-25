@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Summary - Vyanjanam</title>
+    <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+
+    <meta name="description"
+          content="Review your order summary on Vyanjanam. Confirm food details, quantity, price, and delivery information before placing the order.">
+    <meta name="keywords" content="Vyanjanam, Order Summary, Indian Cuisine, Food Delivery, Confirm Order">
+    <meta name="robots" content="index, follow">
+
+
+    <script type="application/ld+json" id="json-ld">
+        {
+            "@context": "https://schema.org",
+            "@type": "Order",
+            "merchant": {
+                "@type": "Organization",
+                "name": "Vyanjanam",
+                "url": ""
+            },
+            "customer": {
+                "@type": "Person",
+                "name": "",
+                "telephone": ""
+            },
+            "orderedItem": {
+                "@type": "MenuItem",
+                "name": "",
+                "description": "",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "",
+                    "priceCurrency": "INR"
+                }
+            },
+            "orderStatus": "OrderProcessing"
+        }
+    </script>
+
+    <style>
+        body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:0; background:#f7f7f7; }
+        .container { max-width:600px; margin:40px auto; background:#fff; padding:25px; border-radius:14px; box-shadow:0 6px 18px rgba(0,0,0,0.1); }
+        h1,h2,h3 { text-align:center; }
+        h1 { display:none; } /* For SEO */
+        label{ display:block; margin:8px 0 3px; font-weight:bold; }
+        input,textarea { width:100%; padding:8px; margin-bottom:10px; border-radius:6px; border:1px solid #ccc; }
+        input[readonly], textarea[readonly]{ background:#e9ecef; cursor:not-allowed; }
+        button { padding:10px 20px; border:none; border-radius:6px; cursor:pointer; margin:5px; font-weight:bold; }
+        .order-btn{ background:#28a745; color:#fff; }
+        .order-btn:hover{ background:#218838; }
+        .cancel-btn{ background:#dc3545; color:#fff; }
+        .cancel-btn:hover{ background:#b52b37; }
+        .message{ margin-top:15px; padding:12px; border-radius:8px; display:none; font-size:14px; }
+        .success{ background:#d4edda; color:#155724; }
+        .error{ background:#f8d7da; color:#721c24; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Vyanjanam Order Summary</h1>
+    <h2>Order Summary</h2>
+
+    <label>Food Name</label>
+    <input type="text" id="summaryFoodName" readonly>
+
+    <label>Quantity</label>
+    <input type="number" id="summaryQuantity" min="1" readonly>
+
+    <label>Description</label>
+    <textarea id="summaryDesc" rows="3" readonly></textarea>
+
+    <label>Price</label>
+    <input type="text" id="summaryPrice" readonly>
+
+    <label>User Name</label>
+    <input type="text" id="userName" placeholder="Enter your name">
+
+    <label>User Contact</label>
+    <input type="text" id="userContact" placeholder="Enter your calling number">
+
+    <label>Delivery Address</label>
+    <textarea id="userAddress" rows="3" placeholder="Enter delivery address"></textarea>
+
+    <div style="text-align:center;">
+        <button class="order-btn" onclick="placeOrder()">Place Order</button>
+        <button class="cancel-btn" onclick="goBack()">Cancel</button>
+    </div>
+
+    <div id="messageBox" class="message"></div>
+</div>
+
+<script>
+    const token = localStorage.getItem("userToken");
+    if(!token) window.location.href="user_login.html";
+
+    const orderData = JSON.parse(localStorage.getItem("orderSummary") || "{}");
+    if(!orderData || !orderData.food_name) window.location.href="index.html";
+
+    document.getElementById("summaryFoodName").value = orderData.food_name;
+    document.getElementById("summaryQuantity").value = orderData.quantity;
+    document.getElementById("summaryDesc").value = orderData.descriptions || "";
+    document.getElementById("summaryPrice").value = orderData.price ? "₹"+parseInt(orderData.price)*orderData.quantity : "";
+
+    const profile = JSON.parse(localStorage.getItem("userProfile") || "{}");
+    if(profile.name) document.getElementById("userName").value = profile.name;
+    if(profile.contact) document.getElementById("userContact").value = profile.contact;
+
+    function updateJSONLD(order) {
+        const jsonLdScript = document.getElementById("json-ld");
+        const jsonLd = {
+            "@context": "https://schema.org",
+            "@type": "Order",
+            "merchant": {
+                "@type": "Organization",
+                "name": "Vyanjanam",
+                "url": "http://yourwebsite.com"
+            },
+            "customer": {
+                "@type": "Person",
+                "name": order.user_name || "",
+                "telephone": order.user_contact || ""
+            },
+            "orderedItem": {
+                "@type": "MenuItem",
+                "name": order.food_name || "",
+                "description": order.descriptions || "",
+                "offers": {
+                    "@type": "Offer",
+                    "price": order.price || "",
+                    "priceCurrency": "INR"
+                }
+            },
+            "orderStatus": "OrderProcessing"
+        };
+        jsonLdScript.textContent = JSON.stringify(jsonLd);
+    }
+
+    async function placeOrder(){
+        const msgBox = document.getElementById("messageBox");
+        msgBox.style.display="none";
+
+        const data = {
+            food_id: orderData.categoryId,
+            price: orderData.price ? parseInt(orderData.price)*orderData.quantity : "",
+            itemImage: orderData.image_url,
+            food_name: document.getElementById("summaryFoodName").value,
+            quantity: parseInt(document.getElementById("summaryQuantity").value),
+            user_name: document.getElementById("userName").value,
+            user_contact: document.getElementById("userContact").value,
+            delivery_address: document.getElementById("userAddress").value
+        };
+
+        updateJSONLD(data); // Update structured data dynamically
+
+        try {
+            const response = await fetch("https://restaurantfoodorderingsystem-6.onrender.com/item-order", {
+                method:"POST",
+                headers: { "Content-Type":"application/json", Authorization:"Bearer "+token },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if(response.ok){
+                msgBox.textContent = result.message || "Order placed successfully!";
+                msgBox.className = "message success";
+                msgBox.style.display="block";
+                setTimeout(()=> window.location.href="index.html", 2500);
+            } else {
+                msgBox.textContent = result.message || "Failed to place order.";
+                msgBox.className = "message error";
+                msgBox.style.display="block";
+            }
+        } catch(err){
+            msgBox.textContent = "Something went wrong. Try again later.";
+            msgBox.className = "message error";
+            msgBox.style.display="block";
+        }
+    }
+
+    function goBack(){ window.location.href="index.html"; }
+</script>
+
+</body>
+</html>

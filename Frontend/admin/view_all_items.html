@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vyanjanam</title>
+    <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+    <script>
+        const token = localStorage.getItem("VyanjanamAdminToken");
+
+        function redirectToLogin() {
+          localStorage.removeItem("VyanjanamAdminToken");
+          window.location.href = "admin_login.html";
+        }
+
+        if (token) {
+          try {
+            const parts = token.split(".");
+            if (parts.length !== 3) throw new Error("Invalid token format");
+
+            const payload = JSON.parse(atob(parts[1]));
+            const expiry = payload.exp;
+            const role = payload.role;
+            const now = Math.floor(Date.now() / 1000);
+
+            if (now > expiry || role !== "admin") {
+              redirectToLogin();
+            }
+          } catch (err) {
+            console.error("Token Error:", err);
+            redirectToLogin();
+          }
+        } else {
+          redirectToLogin();
+        }
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
+
+        .navbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: #333;
+          color: #fff;
+          padding: 10px 20px;
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          flex-wrap: wrap;
+        }
+        .nav-left, .nav-right { display: flex; gap: 10px; flex-wrap: wrap; margin: 5px 0; }
+        .nav-left button, .nav-right button {
+          background: #333; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 14px;
+        }
+        .nav-left button:hover, .nav-right button:hover { background: pink; }
+        .nav-left button.active { background: #333; color: #fff; }
+
+        h2 { text-align: center; margin: 20px 0; }
+
+        .menu-grid { display: grid; gap: 15px; padding: 0 20px 20px 20px; }
+
+        .menu-card {
+          background: #fff; border-radius: 10px; box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+          display: flex; flex-direction: column; align-items: center; text-align: center;
+          transition: transform 0.2s ease; overflow: hidden; padding: 8px; cursor: pointer;
+        }
+        .menu-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+
+        .menu-image {
+          width: 50%; height: auto; max-height: 110px; object-fit: contain; border-radius: 8px; margin-bottom: 5px;
+          background: #f0f0f0;
+        }
+
+        .menu-card h3 { font-size: 16px; margin: 3px 0; color: #333; }
+
+        @media (max-width: 480px) { .menu-grid { grid-template-columns: repeat(1, 1fr); } .menu-card h3 { font-size: 14px; } }
+        @media (min-width: 481px) and (max-width: 768px) { .menu-grid { grid-template-columns: repeat(2, 1fr); } .menu-card h3 { font-size: 15px; } }
+        @media (min-width: 769px) and (max-width: 1200px) { .menu-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 1201px) { .menu-grid { grid-template-columns: repeat(4, 1fr); } }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="title">Admin Panel</div>
+    <div class="nav-left" id="category-buttons"></div>
+    <div class="nav-right">
+        <button onclick="window.location.href='admin_dashboard.html'">Back</button>
+    </div>
+</div>
+
+<h2>Menu</h2>
+<div id="menu" class="menu-grid"></div>
+
+<script>
+    const menuContainer = document.getElementById("menu");
+    const categoryButtons = document.getElementById("category-buttons");
+    let allData = [];
+
+    function truncate(str, n) { return str.length > n ? str.substr(0, n) + "..." : str; }
+    function setActiveButton(button) {
+        document.querySelectorAll(".nav-left button").forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+    }
+
+    async function loadMenu() {
+        menuContainer.innerHTML = "<p style='text-align:center;'>Loading menu...</p>";
+
+        try {
+            const response = await fetch("https://restaurantfoodorderingsystem-6.onrender.com/admin-menu", {
+                method: "GET",
+                headers: { Authorization: "Bearer " + token,"Content-Type": "application/json" }
+            });
+
+            if (!response.ok) throw new Error("Unauthorized or server error");
+
+            const data = await response.json();
+            allData = data;
+
+
+            // Create category buttons
+            const allBtn = document.createElement("button");
+            allBtn.innerText = "All";
+            allBtn.classList.add("active");
+            allBtn.onclick = () => { setActiveButton(allBtn); renderMenu(); };
+            categoryButtons.appendChild(allBtn);
+
+            data.forEach(cat => {
+                const btn = document.createElement("button");
+                btn.innerText = cat.category;
+                btn.onclick = () => { setActiveButton(btn); renderMenu(cat.category); };
+                categoryButtons.appendChild(btn);
+            });
+
+            renderMenu();
+        } catch (err) {
+            console.error(err);
+            menuContainer.innerHTML = `<p>Could not load menu: ${err.message}</p>`;
+        }
+    }
+
+    function renderMenu(category = null) {
+        menuContainer.innerHTML = "";
+        const itemsToShow = [];
+
+        allData.forEach(cat => {
+    if (!category || cat.category === category) {
+        cat.items.forEach(item => {
+            itemsToShow.push({
+                ...item,
+
+                categoryName: cat.category // <-- Add category name here
+            });
+        });
+    }
+});
+
+
+        localStorage.setItem("editItemData", JSON.stringify(itemsToShow));
+
+        itemsToShow.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "menu-card";
+
+            card.innerHTML = `
+              <img src="${item.image_url}" alt="${item.food_name}" class="menu-image" loading="lazy" />
+              <h3>${truncate(item.food_name, 20)}</h3>
+            `;
+
+            menuContainer.appendChild(card);
+        });
+    }
+
+    loadMenu();
+</script>
+
+</body>
+</html>

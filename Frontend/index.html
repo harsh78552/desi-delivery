@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button.user {
+            background-color: #fff;
+            color: #2575fc;
+        }
+
+        button.admin {
+            background-color: #ff4757;
+            color: #fff;
+        }
+
+        button:hover {
+            transform: translateY(-5px);
+        }
+
+        #healthStatus {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Food Ordering System</h1>
+
+    <div class="buttons">
+        <button class="user" onclick="window.location.href='User/user_login.html'">User</button>
+        <button class="admin" onclick="window.location.href='admin/admin_login.html'">Admin</button>
+    </div>
+
+    <div id="healthStatus">Checking API health...</div>
+
+    <script>
+        // Change this URL to your backend URL
+        const API_HEALTH_URL = "https://restaurantfoodorderingsystem-6.onrender.com/health";
+
+        async function checkHealth() {
+            const statusEl = document.getElementById("healthStatus");
+            try {
+                const res = await fetch(API_HEALTH_URL);
+                const data = await res.json();
+                if (res.ok) {
+                    statusEl.innerText = `API Health: ✅ ${data.message}`;
+                    statusEl.style.background = "rgba(0,128,0,0.3)";
+                } else {
+                    statusEl.innerText = `API Health: ❌ ${data.message || "Something went wrong"}`;
+                    statusEl.style.background = "rgba(255,0,0,0.3)";
+                }
+            } catch (err) {
+                console.error("Health check error:", err);
+                statusEl.innerText = "API Health: ❌ Cannot reach server!";
+                statusEl.style.background = "rgba(255,0,0,0.3)";
+            }
+        }
+
+        // Check health when page loads
+        checkHealth();
+    </script>
+</body>
+</html>

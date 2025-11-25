@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration - Vyanjanam</title>
+    <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+
+    <meta name="description"
+          content="Register as a user on Vyanjanam to enjoy our Indian cuisine. Update your contact and address details easily.">
+    <meta name="keywords" content="Vyanjanam, User Registration, Indian Restaurant, Sign Up, User Account">
+    <meta name="robots" content="index, follow">
+
+    <script type="application/ld+json" id="json-ld">
+        {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "",
+            "url": "",
+            "description": "User registration page for Vyanjanam. Users can create an account and update their details.",
+            "email": "",
+            "telephone": "",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "",
+                "addressLocality": "",
+                "postalCode": "",
+                "addressCountry": "IN"
+            }
+        }
+    </script>
+
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: #f7f7f7;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          padding: 40px;
+        }
+        .container {
+          background: #fff;
+          padding: 25px 30px;
+          border-radius: 10px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          max-width: 500px;
+          width: 100%;
+        }
+        h1 { display: none; } /* For SEO */
+        .container h2 {
+          text-align: center;
+          margin-bottom: 20px;
+          color: #333;
+        }
+        form { display: grid; gap: 15px; }
+        label { font-weight: bold; }
+        input, textarea {
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 6px;
+          font-size: 14px;
+          width: 100%;
+        }
+        button {
+          padding: 12px;
+          background: #007bff;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          font-size: 16px;
+          cursor: pointer;
+        }
+        button:hover { background: #0056b3; }
+        .message {
+          text-align: center;
+          font-weight: bold;
+          margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Vyanjanam User Registration</h1>
+    <h2>User Registration</h2>
+    <form id="registerForm">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" minlength="6" required>
+
+        <label for="contact">Contact</label>
+        <input type="tel" id="contact" name="contact" pattern="[0-9]{10}" placeholder="10-digit number" required>
+
+        <label for="permanent_address">Permanent Address</label>
+        <textarea id="permanent_address" name="permanent_address" rows="2" required></textarea>
+
+        <label for="residential_address">Residential Address</label>
+        <textarea id="residential_address" name="residential_address" rows="2"></textarea>
+
+        <label for="landmark">Landmark</label>
+        <input type="text" id="landmark" name="landmark" required>
+
+        <label for="pin_code">PIN Code</label>
+        <input type="text" id="pin_code" name="pin_code" pattern="[0-9]{6}" required>
+
+        <button type="submit">Register</button>
+    </form>
+    <div class="message" id="message"></div>
+</div>
+
+<script>
+    const form = document.getElementById("registerForm");
+    const message = document.getElementById("message");
+    const jsonLdScript = document.getElementById("json-ld");
+
+    // Function to update JSON-LD dynamically
+    function updateJSONLD(user) {
+        const jsonLd = {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": user.name || "",
+            "url": "http://yourwebsite.com/user-registration",
+            "description": "Registered user on Vyanjanam website.",
+            "email": user.email || "",
+            "telephone": user.contact || "",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": user.residential_address || "",
+                "addressLocality": user.permanent_address || "",
+                "postalCode": user.pin_code || "",
+                "addressCountry": "IN"
+            }
+        };
+        jsonLdScript.textContent = JSON.stringify(jsonLd);
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        name: form.name.value,
+        email: form.email.value,
+        password: form.password.value,
+        contact: form.contact.value,
+        permanent_address: form.permanent_address.value,
+        residential_address: form.residential_address.value,
+        landmark: form.landmark.value,
+        pin_code: form.pin_code.value,
+      };
+
+      try {
+        const res = await fetch("https://restaurantfoodorderingsystem-6.onrender.com/user-registration", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+            const responseData = await res.json();
+            message.style.color = "green";
+            message.textContent = responseData.message || "Registration successful!";
+            form.reset();
+
+            // Update JSON-LD after successful registration
+            updateJSONLD(data);
+
+            setTimeout(() => { message.textContent = ""; }, 2000);
+        } else {
+            const errorData = await res.json();
+            message.style.color = "red";
+            message.textContent = errorData.message || "Error registering user.";
+            setTimeout(() => { message.textContent = ""; }, 2000);
+        }
+      } catch (err) {
+        message.style.color = "red";
+        message.textContent = "Network error.";
+      }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vyanjanam Menu</title>
+    <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+    <style>
+        body { font-family: Arial; background: #f7f7f7; margin: 0; padding: 0; }
+        h2 { text-align: center; margin: 20px 0; }
+
+        /* Navbar */
+        .navbar { display:flex; align-items:center; background:#333; color:#fff; padding:10px; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
+        .navbar .title { font-weight:bold; font-size:16px; }
+        .navbar .buttons { margin-left:auto; display:flex; gap:10px; }
+        .navbar .buttons button { background:#333; color:white; border:none; padding:8px 14px; border-radius:5px; cursor:pointer; transition:0.2s; }
+        .navbar .buttons button:hover { background:pink; }
+
+        /* Menu Grid */
+        .menu-grid { display:grid; gap:15px; padding:0 20px 20px 20px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+        .menu-card { background:#fff; border-radius:10px; box-shadow:0 3px 8px rgba(0,0,0,0.12); display:flex; flex-direction:column; align-items:center; text-align:center; overflow:hidden; padding:12px; transition: transform 0.2s; }
+        .menu-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+        .menu-image { width:50%; height:110px; object-fit:cover; border-radius:8px; margin-bottom:8px; }
+        .menu-card h3 { font-size:16px; margin:4px 0; color:#333; }
+        .menu-card p { font-size:14px; color:#555; margin:2px 0; }
+        .edit-btn { margin-top:8px; background:#007bff; color:#fff; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; }
+        .edit-btn:hover { background:#0056b3; }
+
+        /* Notification Box */
+        #messageBox { display:none; text-align:center; padding:12px; margin:15px auto; width:80%; border-radius:6px; font-weight:bold; }
+        #messageBox.success { background:#2ecc71; color:white; }
+        #messageBox.error { background:#e74c3c; color:white; }
+
+        /* Modal Styles */
+        #editModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000; }
+        #editModal .modal-content { background:#fff; padding:30px; border-radius:12px; max-width:400px; width:90%; box-shadow:0 4px 12px rgba(0,0,0,0.2); position:relative; }
+        #editModal .modal-content h2 { margin-top:0; }
+        #editModal .modal-content input, #editModal .modal-content textarea { width:100%; margin:8px 0; padding:8px; border-radius:5px; border:1px solid #ccc; font-size:14px; }
+        #editModal .modal-content button { cursor:pointer; font-weight:bold; border:none; padding:8px 16px; border-radius:6px; }
+        #editModal .modal-content .save-btn { background:#2ecc71; color:#fff; }
+        #editModal .modal-content .cancel-btn { background:#e74c3c; color:#fff; }
+        #editModal .close-modal { position:absolute; top:10px; right:15px; cursor:pointer; font-weight:bold; font-size:18px; }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <div class="title">Admin Panel</div>
+    <div class="buttons">
+        <button onclick="goBack()">Back</button>
+        <button onclick="goToPage('profile.html')">Profile</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<!-- Notification -->
+<div id="messageBox"></div>
+
+<h2>Menu Items</h2>
+<div id="menu" class="menu-grid"></div>
+
+<!-- Edit Modal -->
+<div id="editModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">×</span>
+        <h2>Edit Menu Item</h2>
+        <form id="editForm">
+            <input type="text" name="food_name" placeholder="Food Name" required>
+            <input type="number" name="price" placeholder="Price" required>
+            <textarea name="descriptions" placeholder="Description" rows="2"></textarea>
+            <input type="text" name="sub_category" placeholder="Sub Category" required>
+            <input type="text" name="image_url" placeholder="Image URL" required>
+            <div style="display:flex; justify-content:space-between; margin-top:12px;">
+                <button type="submit" class="save-btn">Save</button>
+                <button type="button" class="cancel-btn" onclick="closeModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const menuContainer = document.getElementById("menu");
+
+    const modal = document.getElementById("editModal");
+    const editForm = document.getElementById("editForm");
+    let editingItem = null;
+
+    // Navbar functions
+    function goBack(){ window.history.back(); }
+    function goToPage(p){ window.location.href=p; }
+    function logout(){ localStorage.removeItem("VyanjanamAdminToken"); window.location.href="admin_login.html"; }
+
+    function showMessage(text,type="info"){
+        const msgBox=document.getElementById("messageBox");
+        msgBox.textContent=text;
+        msgBox.className=type;
+        msgBox.style.display="block";
+        setTimeout(()=>msgBox.style.display="none",3000);
+    }
+
+    // Truncate helper
+    function truncate(str,n){ return str.length>n ? str.substr(0,n)+"..." : str; }
+
+    // Render items
+    function renderMenu(){
+        menuContainer.innerHTML="";
+        const items = JSON.parse(localStorage.getItem("editItemData") || "[]");
+        console.log(items)
+        items.forEach(item=>{
+            const card=document.createElement("div");
+            card.className="menu-card";
+            card.innerHTML=`
+                <img src="${item.image_url}" class="menu-image" />
+                <h3>${truncate(item.food_name,30)}</h3>
+                <p><strong>Price:</strong> ${item.price}</p>
+                <p><strong>Description:</strong> ${truncate(item.descriptions||'',60)}</p>
+                <button class="edit-btn">Edit</button>
+            `;
+            card.querySelector(".edit-btn").onclick=()=>{
+                editingItem=item;
+                editForm.food_name.value=item.food_name;
+                editForm.price.value=item.price;
+                editForm.descriptions.value=item.descriptions||'';
+                editForm.sub_category.value=item.sub_category||'';
+                editForm.image_url.value=item.image_url||'';
+                modal.style.display="flex";
+            }
+            menuContainer.appendChild(card);
+        });
+    }
+
+    function closeModal(){ modal.style.display="none"; editingItem=null; }
+
+    // Save edits
+    editForm.addEventListener("submit", async function(e){
+        e.preventDefault();
+        if(!editingItem) return;
+
+        // Update localStorage data
+        const items = JSON.parse(localStorage.getItem("editItemData") || "[]");
+        const index = items.findIndex(i=>i._id===editingItem._id);
+        if(index>-1){
+            items[index]={
+                ...items[index],
+                food_name: editForm.food_name.value,
+                price: editForm.price.value,
+                descriptions: editForm.descriptions.value,
+                sub_category: editForm.sub_category.value,
+                image_url: editForm.image_url.value
+            };
+            localStorage.setItem("editItemData", JSON.stringify(items));
+            renderMenu();
+            showMessage("Item updated successfully","success");
+            closeModal();
+        }
+    });
+
+    renderMenu();
+</script>
+
+</body>
+</html>

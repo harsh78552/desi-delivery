@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+    <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: #f7f7f7;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .navbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: #333;
+          color: #fff;
+          padding: 10px 20px;
+          width: 100%;
+          position: fixed;
+          top: 0;
+          left: 0;
+          z-index: 1000;
+          box-sizing: border-box; /* ensure padding doesn’t push content outside */
+        }
+
+        .navbar .brand {
+          font-size: 20px;
+          color: #fff;
+        }
+
+        .navbar .buttons {
+          display: flex;
+          gap: 10px; /* spacing between buttons */
+        }
+
+        .navbar .buttons button {
+          background: #333;
+          color: #fff;
+          border: none;
+          padding: 8px 12px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: 0.2s;
+          white-space: nowrap; /* prevents text from wrapping */
+        }
+
+        .navbar .buttons button:hover {
+          background: pink;
+          color: #333;
+        }
+
+        /* Optional: make navbar responsive */
+        @media (max-width: 480px) {
+          .navbar {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .navbar .buttons {
+            width: 100%;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+          }
+          .navbar .buttons button {
+            flex: 1 1 auto;
+          }
+        }
+
+
+        /* Form container */
+        .container {
+          background: #fff;
+          padding: 25px 30px;
+          border-radius: 10px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          max-width: 500px;
+          width: 100%;
+          margin-top: 90px; /* pushed below navbar */
+        }
+
+        .container h2 {
+          text-align: center;
+          margin-bottom: 20px;
+          color: #333;
+        }
+
+        form {
+          display: grid;
+          gap: 15px;
+        }
+
+        label {
+          font-weight: bold;
+        }
+
+        input, textarea {
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 6px;
+          font-size: 14px;
+          width: 100%;
+        }
+
+        button[type="submit"] {
+          padding: 10px;
+          background: #333;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          font-size: 16px;
+          cursor: pointer;
+          transition: 0.2s;
+        }
+
+        button[type="submit"]:hover {
+          background: pink;
+          color: #333;
+        }
+
+        .message {
+          text-align: center;
+          font-weight: bold;
+          margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <div class="brand">Admin Panel</div>
+    <div class="buttons">
+        <button onclick="goBack()">Back</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<!-- Form Container -->
+<div class="container">
+    <h2>Staff Registration</h2>
+    <form id="registerForm">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" minlength="6" required>
+
+        <label for="role">Role</label>
+        <input type="text" id="role" name="role" required>
+
+        <label for="contact">Contact</label>
+        <input type="tel" id="contact" name="contact" pattern="[0-9]{10}" placeholder="10-digit number" required>
+
+        <label for="permanent_address">Permanent Address</label>
+        <textarea id="permanent_address" name="permanent_address" rows="2" required></textarea>
+
+        <label for="residential_address">Residential Address</label>
+        <textarea id="residential_address" name="residential_address" rows="2"></textarea>
+
+        <label for="state">State</label>
+        <input type="text" id="state" name="state" required>
+
+        <button type="submit">Register</button>
+    </form>
+    <div class="message" id="message"></div>
+</div>
+
+<script>
+    function goBack() {
+      window.history.back();
+    }
+
+    function logout() {
+      localStorage.removeItem("VyanjanamAdminToken");
+      window.location.href = "admin_login.html";
+    }
+
+    const form = document.getElementById("registerForm");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        name: form.name.value,
+        email: form.email.value,
+        password: form.password.value,
+        role: form.role.value,
+        contact: form.contact.value,
+        permanent_address: form.permanent_address.value,
+        residential_address: form.residential_address.value,
+        state: form.state.value
+      };
+
+      try {
+        const res = await fetch("https://restaurantfoodorderingsystem-6.onrender.com/staff-registration", {
+          method: "POST",
+          headers: { "Content-Type":"application/json", Authorization:"Bearer "+localStorage.getItem("VyanjanamAdminToken") },
+          body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          message.style.color = "green";
+          message.textContent = data.message;
+          form.reset();
+
+          setTimeout(() => { message.textContent = ""; }, 2000);
+        } else {
+          const errorData = await res.json();
+          message.style.color = "red";
+          message.textContent = errorData.message || "Error adding staff.";
+          setTimeout(() => { message.textContent = ""; }, 2000);
+        }
+      } catch (err) {
+        message.style.color = "red";
+        message.textContent = "Network error.";
+      }
+    });
+</script>
+</body>
+</html>

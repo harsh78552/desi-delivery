@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Orders - Admin</title>
+    <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+    <script>
+        const token = localStorage.getItem("VyanjanamAdminToken");
+
+        function redirectToLogin() {
+          localStorage.removeItem("VyanjanamAdminToken");
+          window.location.href = "admin_login.html";
+        }
+
+        if (token) {
+          try {
+            const parts = token.split(".");
+            if (parts.length !== 3) throw new Error("Invalid token format");
+
+            const payload = JSON.parse(atob(parts[1]));
+            const expiry = payload.exp;
+            const role = payload.role;
+            const now = Math.floor(Date.now() / 1000);
+
+            if (now > expiry || role !== "admin") {
+              redirectToLogin();
+            }
+          } catch (err) {
+            console.error("Token Error:", err);
+            redirectToLogin();
+          }
+        } else {
+          redirectToLogin();
+        }
+    </script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin:0; padding:0; background:#f0f2f5; }
+        .navbar { display:flex; justify-content:space-between; align-items:center; background:#333; color:#fff; padding:10px 20px; box-shadow:0 2px 6px rgba(0,0,0,0.2);}
+        .navbar button { background:#333; color:#fff; border:none; padding:8px 12px; margin-left:10px; border-radius:4px; cursor:pointer; transition:0.2s;}
+        .navbar button:hover { background:pink; }
+        .container { max-width:1400px; margin:20px auto; padding:10px; }
+        .filters { display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap; }
+        .filters input { padding:6px 10px; border-radius:6px; border:1px solid #ccc; }
+        .summary { margin-bottom:15px; font-weight:bold; font-size:16px; }
+        .order-card { background:#fff; margin-bottom:15px; border-radius:10px; box-shadow:0 3px 6px rgba(0,0,0,0.1); padding:15px; transition:0.2s; }
+        .order-card:hover { box-shadow:0 6px 12px rgba(0,0,0,0.15); }
+        .order-header { display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold; flex-wrap:wrap; gap:10px; }
+        .items-list { display:flex; flex-direction:column; gap:8px; }
+        .item { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+        .item img { width:50px; height:50px; object-fit:cover; border-radius:6px; }
+        .item span { font-size:14px; }
+        .bold { font-weight:bold; color:#2c3e50; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div>Admin Dashboard</div>
+    <div>
+        <button onclick="goBack()">Back</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="filters">
+        <input type="date" id="filterDate">
+        <input type="text" id="filterEmail" placeholder="Filter by Email">
+        <input type="text" id="filterItem" placeholder="Filter by Item Name">
+        <button onclick="applyFilters()">Apply Filters</button>
+        <button onclick="clearFilters()">Clear</button>
+    </div>
+    <div class="summary" id="summary">Loading summary...</div>
+    <div id="ordersContainer"></div>
+</div>
+
+<script>
+
+    function goBack(){ window.history.back(); }
+    function logout(){ localStorage.removeItem("VyanjanamAdminToken"); window.location.href="admin_login.html"; }
+
+    let allItems = [];
+
+    async function fetchOrders(){
+      try{
+        const res = await fetch('https://restaurantfoodorderingsystem-6.onrender.com/get-all-ordered', {
+          method: 'POST',
+          headers: { Authorization: "Bearer " + token  }
+        });
+        const orders = await res.json();
+
+        // Flatten orders by item
+        allItems = [];
+        orders.forEach(order=>{
+          order.order_summary.forEach(item=>{
+            allItems.push({ orderId: order._id, email: order.email, ...item });
+          });
+        });
+
+        // Sort by date descending
+        allItems.sort((a,b)=> new Date(b.date) - new Date(a.date));
+
+        renderOrders(allItems);
+
+      }catch(err){
+        console.error(err);
+        document.getElementById('summary').textContent='Failed to load orders';
+      }
+    }
+
+    function renderOrders(items){
+      const container = document.getElementById('ordersContainer');
+      container.innerHTML = '';
+      const summaryDiv = document.getElementById('summary');
+      const summaryCount = {};
+
+      // Filtered items grouped by orderId
+      const groupedOrders = {};
+      items.forEach(item=>{
+        if(!groupedOrders[item.orderId]) groupedOrders[item.orderId] = { email: item.email, items: [], date: item.date };
+        groupedOrders[item.orderId].items.push(item);
+
+        // Count per day
+        const dateKey = new Date(item.date).toLocaleDateString();
+        summaryCount[dateKey] = (summaryCount[dateKey]||0)+1;
+      });
+
+      for(const [orderId, order] of Object.entries(groupedOrders)){
+        const card = document.createElement('div');
+        card.className = 'order-card';
+        const total = order.items.reduce((sum,i)=>sum+i.total_price,0);
+        card.innerHTML = `
+          <div class="order-header">
+            <span>Order ID: ${orderId}</span>
+            <span>User: ${order.email}</span>
+            <span>Total: ₹${total}</span>
+          </div>
+          <div class="items-list">
+            ${order.items.map(item=>`
+              <div class="item">
+                <img src="${item.item_image}">
+                <span>${item.item} (x${item.quantity}) - ₹${item.total_price}</span>
+                <span>Delivery: ${item.delivery_address}</span>
+                <span>Date: ${new Date(item.date).toLocaleString()}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        container.appendChild(card);
+      }
+
+      // Summary in bold per date
+      const summaryText = Object.entries(summaryCount)
+        .map(([date,count])=>`${date}: ${count} orders`)
+        .join(' | ');
+      summaryDiv.innerHTML = `<span class="bold">Total Orders: ${items.length}</span> | ${summaryText}`;
+    }
+
+    function applyFilters(){
+      const dateFilter = document.getElementById('filterDate').value;
+      const emailFilter = document.getElementById('filterEmail').value.toLowerCase();
+      const itemFilter = document.getElementById('filterItem').value.toLowerCase();
+
+      const filtered = allItems.filter(i=>{
+        const matchesDate = dateFilter ? new Date(i.date).toISOString().slice(0,10) === dateFilter : true;
+        const matchesEmail = emailFilter ? i.email.toLowerCase().includes(emailFilter) : true;
+        const matchesItem = itemFilter ? i.item.toLowerCase().includes(itemFilter) : true;
+        return matchesDate && matchesEmail && matchesItem;
+      });
+
+      renderOrders(filtered);
+    }
+
+    function clearFilters(){
+      document.getElementById('filterDate').value='';
+      document.getElementById('filterEmail').value='';
+      document.getElementById('filterItem').value='';
+      renderOrders(allItems);
+    }
+
+    fetchOrders();
+</script>
+</body>
+</html>

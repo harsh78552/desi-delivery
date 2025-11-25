@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Staff</title>
+    <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+    <script>
+        const token = localStorage.getItem("VyanjanamAdminToken");
+
+        function redirectToLogin() {
+          localStorage.removeItem("VyanjanamAdminToken");
+          window.location.href = "admin_login.html";
+        }
+
+        if (token) {
+          try {
+            const parts = token.split(".");
+            if (parts.length !== 3) throw new Error("Invalid token format");
+
+            const payload = JSON.parse(atob(parts[1]));
+            const expiry = payload.exp;
+            const role = payload.role;
+            const now = Math.floor(Date.now() / 1000);
+
+            if (now > expiry || role !== "admin") {
+              redirectToLogin();
+            }
+          } catch (err) {
+            console.error("Token Error:", err);
+            redirectToLogin();
+          }
+        } else {
+          redirectToLogin();
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            align-items: center;
+            background: #333;
+            color: #fff;
+            padding: 10px 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .navbar .buttons {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .navbar .buttons button {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .navbar .buttons button:hover {
+            background: pink;
+        }
+
+        /* Staff container */
+        .staff-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        /* Staff cards */
+        .staff-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .staff-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .staff-box p {
+            margin: 8px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .delete-btn {
+            margin-top: 12px;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background: #e74c3c;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Notification Box */
+        #messageBox {
+            display: none;
+            text-align: center;
+            padding: 12px;
+            margin: 15px auto;
+            width: 80%;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        #messageBox.success {
+            background: #2ecc71;
+            color: white;
+        }
+
+        #messageBox.error {
+            background: #e74c3c;
+            color: white;
+        }
+
+        #messageBox.info {
+            background: #3498db;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            .staff-container {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+
+            #messageBox {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar with Right-Aligned Buttons -->
+<div class="navbar">
+    <div class="title">Admin Panel</div>
+    <div class="buttons">
+        <button onclick="goBack()">Back</button>
+        <button onclick="goToPage('profile.html')">Profile</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<!-- Notification Box -->
+<div id="messageBox"></div>
+
+<!-- Staff Cards Container -->
+<div class="staff-container" id="staffContainer"></div>
+
+<script>
+
+    function goBack() {
+        window.history.back();
+    }
+
+    function goToPage(page) {
+        window.location.href = page;
+    }
+
+    function logout() {
+        localStorage.removeItem("VyanjanamAdminToken");
+        window.location.href = "admin_login.html";
+    }
+
+    const staffContainer = document.getElementById("staffContainer");
+
+    // Show message in notification bar
+    function showMessage(text, type = "info") {
+        const msgBox = document.getElementById("messageBox");
+        msgBox.textContent = text;
+        msgBox.className = type;
+        msgBox.style.display = "block";
+
+        // Auto-hide after 3s
+        setTimeout(() => {
+            msgBox.style.display = "none";
+        }, 3000);
+    }
+
+    // Fetch staff data
+    async function fetchStaff() {
+        try {
+            const response = await fetch("https://restaurantfoodorderingsystem-6.onrender.com/get-staff", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            const staffList = await response.json();
+            renderStaff(staffList);
+        } catch (error) {
+            console.error('Error fetching staff:', error);
+            showMessage("Failed to fetch staff list.", "error");
+        }
+    }
+
+    // Render staff boxes
+    function renderStaff(staffList) {
+        staffContainer.innerHTML = '';
+        staffList.forEach(staff => {
+            const box = document.createElement('div');
+            box.className = 'staff-box';
+            box.innerHTML = `
+                <p><strong>Name:</strong> ${staff.name}</p>
+                <p><strong>Email:</strong> ${staff.email}</p>
+                <p><strong>Role:</strong> ${staff.role}</p>
+                <button class="delete-btn" onclick="deleteStaff('${staff._id}', this)">Delete</button>
+            `;
+            staffContainer.appendChild(box);
+        });
+    }
+
+    // Delete staff
+    async function deleteStaff(id, btn) {
+        if (!confirm("Are you sure you want to delete this staff?")) return;
+
+        try {
+            const response = await fetch(`https://restaurantfoodorderingsystem-6.onrender.com/delete-staff?id=${id}`, {
+                method: 'DELETE',
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Remove staff box smoothly
+                const staffBox = btn.closest('.staff-box');
+                staffBox.style.transition = "opacity 0.3s ease";
+                staffBox.style.opacity = "0";
+                setTimeout(() => staffBox.remove(), 300);
+
+                showMessage(data.message || "Staff deleted successfully!", "success");
+            } else {
+                showMessage(data.message || "Failed to delete staff.", "error");
+            }
+        } catch (error) {
+            console.error("Error deleting staff:", error);
+            showMessage("Internal server error.", "error");
+        }
+    }
+
+    // Initial load
+    fetchStaff();
+</script>
+
+</body>
+</html>

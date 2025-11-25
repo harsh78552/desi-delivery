@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Staff</title>
+    <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+    <script>
+        const token = localStorage.getItem("VyanjanamAdminToken");
+
+        function redirectToLogin() {
+          localStorage.removeItem("VyanjanamAdminToken");
+          window.location.href = "admin_login.html";
+        }
+
+        if (token) {
+          try {
+            const parts = token.split(".");
+            if (parts.length !== 3) throw new Error("Invalid token format");
+
+            const payload = JSON.parse(atob(parts[1]));
+            const expiry = payload.exp;
+            const role = payload.role;
+            const now = Math.floor(Date.now() / 1000);
+
+            if (now > expiry || role !== "admin") {
+              redirectToLogin();
+            }
+          } catch (err) {
+            console.error("Token Error:", err);
+            redirectToLogin();
+          }
+        } else {
+          redirectToLogin();
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        /* Navbar */
+        .navbar {
+            display: flex;
+            align-items: center;
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .navbar .buttons {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+        .navbar .buttons button {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .navbar .buttons button:hover { background: pink; }
+
+        /* Staff container */
+        .staff-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        /* Staff card */
+        .staff-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: 0.2s;
+        }
+        .staff-box p { margin: 6px 0; color: #333; }
+        .action-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .edit-btn { background: #3498db; }
+        .edit-btn:hover { background: #2980b9; }
+
+        /* Notification Box */
+        #messageBox {
+            display: none;
+            text-align: center;
+            padding: 12px;
+            margin: 15px auto;
+            width: 80%;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        #messageBox.success { background: #2ecc71; color: white; }
+        #messageBox.error { background: #e74c3c; color: white; }
+
+        /* Modal Styles */
+        #editModal {
+            display: none;
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.5);
+            justify-content:center; align-items:center;
+            z-index:1000;
+        }
+        #editModal .modal-content {
+            background:#fff;
+            padding:30px;
+            border-radius:12px;
+            max-width:400px;
+            width:90%;
+            box-shadow:0 4px 12px rgba(0,0,0,0.2);
+            position:relative;
+            animation: fadeIn 0.3s;
+        }
+        #editModal .modal-content h2 { margin-top:0; }
+        #editModal .modal-content input,
+        #editModal .modal-content textarea {
+            width: 100%;
+            margin: 8px 0;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        #editModal .modal-content button {
+            cursor:pointer;
+            font-weight:bold;
+            border:none;
+            padding: 8px 16px;
+            border-radius:6px;
+        }
+        #editModal .modal-content .save-btn { background:#2ecc71; color:#fff; }
+        #editModal .modal-content .cancel-btn { background:#e74c3c; color:#fff; }
+        #editModal .close-modal { position:absolute; top:10px; right:15px; cursor:pointer; font-weight:bold; font-size:18px; }
+
+        @keyframes fadeIn {
+            from {opacity:0; transform:translateY(-20px);}
+            to {opacity:1; transform:translateY(0);}
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <div class="title">Admin Panel</div>
+    <div class="buttons">
+        <button onclick="goBack()">Back</button>
+        <button onclick="goToPage('profile.html')">Profile</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<!-- Notification Box -->
+<div id="messageBox"></div>
+
+<!-- Staff Cards -->
+<div class="staff-container" id="staffContainer"></div>
+
+<!-- Modal for editing staff -->
+<div id="editModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">×</span>
+        <h2>Edit Staff</h2>
+        <form id="editForm">
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="text" name="role" placeholder="Role" required>
+            <input type="tel" name="contact" placeholder="Contact">
+            <textarea name="permanent_address" placeholder="Permanent Address" rows="2"></textarea>
+            <textarea name="residential_address" placeholder="Residential Address" rows="2"></textarea>
+            <input type="text" name="state" placeholder="State">
+            <div style="display:flex; justify-content:space-between; margin-top:12px;">
+                <button type="submit" class="save-btn">Save</button>
+                <button type="button" class="cancel-btn" onclick="closeModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function goBack(){ window.history.back(); }
+    function goToPage(p){ window.location.href=p; }
+    function logout(){ localStorage.removeItem("VyanjanamAdminToken"); window.location.href="admin_login.html"; }
+
+    const staffContainer = document.getElementById("staffContainer");
+    const modal = document.getElementById("editModal");
+    const editForm = document.getElementById("editForm");
+    let editingStaffId = null;
+
+    function showMessage(text,type="info"){
+        const msgBox=document.getElementById("messageBox");
+        msgBox.textContent=text;
+        msgBox.className=type;
+        msgBox.style.display="block";
+        setTimeout(()=>msgBox.style.display="none",3000);
+    }
+
+    // Fetch staff
+    async function fetchStaff(){
+        try{
+            const res = await fetch("https://restaurantfoodorderingsystem-6.onrender.com/get-staff",{
+              headers:{Authorization:`Bearer ${token}`}
+            });
+            const staffList = await res.json();
+            renderStaff(staffList);
+        }catch(err){ showMessage("Error loading staff","error"); }
+    }
+
+    // Render staff cards
+    function renderStaff(list){
+        staffContainer.innerHTML="";
+        list.forEach(staff=>{
+            const box=document.createElement("div");
+            box.className="staff-box";
+            box.innerHTML=`
+                <p><strong>Name:</strong> ${staff.name}</p>
+                <p><strong>Email:</strong> ${staff.email}</p>
+                <p><strong>Role:</strong> ${staff.role}</p>
+                <button class="action-btn edit-btn" onclick='openEditModal(${JSON.stringify(staff)})'>Edit</button>
+            `;
+            staffContainer.appendChild(box);
+        });
+    }
+
+    // Open modal with staff data
+    function openEditModal(staff){
+        editingStaffId = staff._id;
+        editForm.name.value = staff.name;
+        editForm.email.value = staff.email;
+        editForm.role.value = staff.role;
+        editForm.contact.value = staff.contact_no || '';
+        editForm.permanent_address.value = staff.permanent_address || '';
+        editForm.residential_address.value = staff.residential_address || '';
+        editForm.state.value = staff.state || '';
+        modal.style.display = "flex";
+    }
+
+    // Close modal
+    function closeModal(){
+        modal.style.display = "none";
+        editingStaffId = null;
+    }
+
+    // Save staff update
+    editForm.addEventListener("submit", async function(e){
+        e.preventDefault();
+        if(!editingStaffId) return;
+
+        const data = Object.fromEntries(new FormData(editForm).entries());
+
+        try{
+            const res = await fetch(`http://127.0.0.1:5006/edit-staff?id=${editingStaffId}`,{
+                method:"PUT",
+                headers:{
+                    "Content-Type":"application/json",
+                    Authorization:`Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if(res.ok){
+                showMessage(result.message || "Staff updated!", "success");
+                fetchStaff();
+                closeModal();
+            } else {
+                showMessage(result.message || "Failed to update","error");
+            }
+        }catch(err){ showMessage("Internal error","error"); }
+    });
+
+    fetchStaff();
+</script>
+
+</body>
+</html>

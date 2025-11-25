@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Menu</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f2f2f2; }
+        .category-box {
+            background: white; padding: 15px; margin-bottom: 25px;
+            border-radius: 10px; box-shadow: 0 2px 5px #ccc;
+        }
+        .food-card {
+            display: flex; gap: 15px; margin-bottom: 15px;
+            background: #fff; padding: 10px; border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .food-card img {
+            width: 120px; height: 90px; object-fit: cover;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Menu Items</h2>
+<div id="menu-container">Loading...</div>
+
+<script>
+    async function loadMenu() {
+        const token = localStorage.getItem("userToken");
+
+        if (!token) {
+            document.getElementById("menu-container").innerHTML =
+                "<b>No token found. Please login first.</b>";
+            return;
+        }
+
+        const res = await fetch("https://restaurantfoodorderingsystem-6.onrender.com/menu", {
+            method: "GET",
+            headers: { Authorization: "Bearer " + token,"Content-Type": "application/json" }
+        });
+
+        const menuData = await res.json();
+        const container = document.getElementById("menu-container");
+        container.innerHTML = "";
+
+        menuData.forEach(cat => {
+            const box = document.createElement("div");
+            box.classList.add("category-box");
+
+            box.innerHTML = `<h3>${cat.category}</h3>`;
+
+            cat.items.forEach(item => {
+                box.innerHTML += `
+                    <div class="food-card">
+                        <img src="${item.image_url}" alt="">
+                        <div>
+                            <h4>${item.food_name}</h4>
+                            <p>${item.descriptions}</p>
+                            <b>Price: ${item.price}</b><br>
+                            <small>Category: ${item.sub_category}</small>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.appendChild(box);
+        });
+    }
+
+    loadMenu();
+</script>
+
+</body>
+</html>

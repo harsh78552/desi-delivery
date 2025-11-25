@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details | Delicious Foods Online</title>
+    <meta name="description"
+          content="Explore delicious food items, view prices, detailed descriptions, and order your favorite meal online. Fresh, tasty, and delivered fast!">
+    <meta name="keywords"
+          content="food, online food, restaurant menu, food order, food details, buy food, Indian cuisine, pizza, burger">
+    <meta name="author" content="Delicious Foods">
+
+    <meta property="og:title" content="Item Details | Delicious Foods Online">
+    <meta property="og:description"
+          content="Explore delicious food items, view prices, detailed descriptions, and order your favorite meal online.">
+    <meta property="og:image" content="/image/myImage.jpg">
+    <meta property="og:url" content="https://yourwebsite.com/item_details.html">
+    <meta property="og:type" content="website">
+
+    <link rel="icon" type="image/png" href="/..image/myImage.jpg">
+
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": "Food Item",
+            "image": "../image/myImage.jpg",
+            "description": "Freshly prepared food item available for online order.",
+            "brand": "Delicious Foods",
+            "offers": {
+                "priceCurrency": "INR",
+                "price": "199",
+                "availability": "https://schema.org/InStock"
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:0; background:#f9f9f9; }
+        header.navbar { display:flex; align-items:center; background:#333; color:#fff; padding:12px 20px; position:fixed; top:0; width:100%; z-index:1000; }
+        header.navbar button { background:#555; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; }
+        header.navbar button:hover { background:#777; }
+        main.container { max-width:600px; margin:100px auto 40px; background:#fff; padding:25px; border-radius:14px; box-shadow:0 6px 18px rgba(0,0,0,0.1); text-align:center; }
+        img { width:50%; max-height:280px; object-fit:cover; border-radius:12px; margin-bottom:20px; background:#f0f0f0; }
+        h1 { margin:10px 0 5px; font-size:26px; color:#222; }
+        p { margin:6px 0; color:#555; font-size:15px; line-height:1.6; }
+        .price { font-size:20px; color:#28a745; font-weight:bold; margin:10px 0; }
+        .quantity { display:flex; justify-content:center; align-items:center; margin:20px 0; gap:15px; }
+        .quantity button { padding:8px 14px; font-size:18px; border:none; border-radius:6px; cursor:pointer; background:#007bff; color:#fff; }
+        .quantity button:hover { background:#0056b3; }
+        .quantity span { font-size:18px; font-weight:bold; color:#333; min-width:30px; text-align:center; display:inline-block; }
+        .actions button { padding:10px 20px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; margin:5px; background:#28a745; color:#fff; }
+        .actions button:hover { background:#218838; }
+        footer { text-align:center; color:#777; font-size:14px; margin-bottom:20px; }
+    </style>
+</head>
+<body>
+
+<header class="navbar" role="navigation">
+    <button onclick="goBack()" aria-label="Go Back to Menu">Back</button>
+</header>
+
+<main class="container">
+    <img id="itemImage" src="../image/myImage.jpg" alt="Food item image" loading="lazy">
+    <h1 id="itemName">Food Name</h1>
+    <p id="itemDesc">Food description will appear here.</p>
+    <p class="price" id="food_price">₹0</p>
+
+    <section class="quantity" aria-label="Select quantity">
+        <button onclick="changeQty(-1)" aria-label="Decrease quantity">−</button>
+        <span id="qty">1</span>
+        <button onclick="changeQty(1)" aria-label="Increase quantity">+</button>
+    </section>
+
+    <div class="actions">
+        <button onclick="goSummary()" aria-label="Proceed to order summary">Next</button>
+    </div>
+</main>
+
+<script>
+    // Dynamic year
+    const yearEl = document.getElementById("year");
+    if(yearEl) yearEl.textContent = new Date().getFullYear();
+
+    // Token check
+    const token = localStorage.getItem("userToken");
+    if (!token) window.location.href = "user_login.html";
+
+    // Get selected item
+    const item = JSON.parse(localStorage.getItem("selectedItem") || "{}");
+    if (!item || !item.food_name) window.location.href = "menu.html";
+
+    // Set initial quantity
+    let quantity = 1;
+
+    // Set content safely
+    const imgEl = document.getElementById("itemImage");
+    imgEl.src = item.image_url && item.image_url.trim() !== "" ? item.image_url : "/src/myImage.jpg";
+    imgEl.alt = item.food_name || "Food Image";
+
+    document.getElementById("itemName").textContent = item.food_name || "Food Name";
+    document.getElementById("itemDesc").textContent = item.descriptions || "Delicious and freshly prepared meal ready to serve.";
+    document.getElementById("food_price").textContent = item.price ? "₹" + item.price : "₹0";
+
+    function changeQty(val){
+        quantity = Math.max(1, quantity + val);
+        document.getElementById("qty").textContent = quantity;
+    }
+
+    function goSummary(){
+        const summaryData = {...item, quantity};
+        localStorage.setItem("orderSummary", JSON.stringify(summaryData));
+        window.location.href = "order_summary.html";
+    }
+
+    function goBack(){ window.location.href = "index.html"; }
+</script>
+
+</body>
+</html>

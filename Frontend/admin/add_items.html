@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Food Item</title>
+    <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+    <script>
+        const token = localStorage.getItem("VyanjanamAdminToken");
+
+        function redirectToLogin() {
+          localStorage.removeItem("VyanjanamAdminToken");
+          window.location.href = "admin_login.html";
+        }
+
+        if (token) {
+          try {
+            const parts = token.split(".");
+            if (parts.length !== 3) throw new Error("Invalid token format");
+
+            const payload = JSON.parse(atob(parts[1]));
+            const expiry = payload.exp;
+            const role = payload.role;
+            const now = Math.floor(Date.now() / 1000);
+
+            if (now > expiry || role !== "admin") {
+              redirectToLogin();
+            }
+          } catch (err) {
+            console.error("Token Error:", err);
+            redirectToLogin();
+          }
+        } else {
+          redirectToLogin();
+        }
+    </script>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          max-width: 600px;
+          margin: 40px auto;
+          padding: 20px;
+          background: #f7f7f7;
+        }
+        h2 {
+          text-align: center;
+          color: #333;
+        }
+        form {
+          display: grid;
+          gap: 15px;
+          background: #fff;
+          padding: 20px;
+          border-radius: 10px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        label {
+          font-weight: bold;
+          margin-bottom: 5px;
+        }
+        input, textarea, select {
+          padding: 8px;
+          border: 1px solid #ccc;
+          border-radius: 6px;
+          font-size: 14px;
+        }
+        button {
+          padding: 10px;
+          background: #28a745;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          font-size: 16px;
+          cursor: pointer;
+        }
+        button:hover {
+          background: black;
+        }
+
+        .message {
+          text-align: center;
+          font-weight: bold;
+          margin-top: 15px;
+        }
+        .navbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: #333;
+          color: #fff;
+          padding: 10px 20px;
+          width: 100%;
+          position: fixed;
+          top: 0;
+          left: 0;
+          z-index: 1000;
+          box-sizing: border-box; /* ensure padding doesn’t push content outside */
+        }
+
+        .navbar .brand {
+          font-size: 20px;
+          color: #fff;
+        }
+
+        .navbar .buttons {
+          display: flex;
+          gap: 10px; /* spacing between buttons */
+        }
+
+        .navbar .buttons button {
+          background: #333;
+          color: #fff;
+          border: none;
+          padding: 8px 12px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: 0.2s;
+          white-space: nowrap; /* prevents text from wrapping */
+        }
+
+        .navbar .buttons button:hover {
+          background: pink;
+          color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Back Button -->
+<div class="navbar">
+    <div class="brand">Admin Panel</div>
+    <div class="buttons">
+        <button onclick="goBack()">Back</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+<h2>Insert Food Item</h2>
+<form id="foodForm">
+    <label for="name">Food Name</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description"></textarea>
+
+    <label for="price">Price (₹)</label>
+    <input type="text" id="price" name="price" required>
+
+    <label for="category">Category</label>
+    <input type="text" id="category" name="category-name">
+
+    <label for="sub-category">Sub-category</label>
+    <input type="text" id="sub-category" name="sub-category-name">
+
+    <label for="availability">Availability</label>
+    <select id="availability" name="availability">
+        <option value="true">Available</option>
+        <option value="false">Not Available</option>
+    </select>
+
+    <label for="image_url">Upload Image</label>
+    <input type="file" id="image_url" name="image_url" accept="image/*">
+
+    <button type="submit">Add Food Item</button>
+</form>
+
+<div class="message" id="message"></div>
+
+<script>
+    // Back button function
+    function goBack() {
+        window.history.back();
+    }
+
+    const form = document.getElementById("foodForm");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // FormData handles text + file upload
+      const formData = new FormData(form);
+
+      try {
+        const res = await fetch("https://restaurantfoodorderingsystem-6.onrender.com/get-food-item", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token }, // do NOT set Content-Type for FormData
+          body: formData
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            message.style.color = "green";
+            message.textContent = data.message || "Food item added successfully!";
+            form.reset();
+
+            setTimeout(() => { message.textContent = ""; }, 2000);
+        } else {
+            const errorData = await res.json();
+            message.style.color = "red";
+            message.textContent = errorData.message || "Error adding food item.";
+
+            setTimeout(() => { message.textContent = ""; }, 2000);
+        }
+
+      } catch (err) {
+        message.style.color = "red";
+        message.textContent = "Network error.";
+      }
+    });
+</script>
+
+</body>
+</html>

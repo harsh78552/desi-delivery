@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Item</title>
+        <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f4f7;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 0;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        form h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        textarea { resize: vertical; min-height: 80px; }
+
+        button {
+            padding: 12px;
+            margin-top: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #28a745, #218838);
+            color: #fff;
+            font-weight: bold;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #218838, #1c6c2e);
+        }
+
+        .image-preview {
+            width: 50%;
+            height: 200px;
+            border-radius: 5px;
+            object-fit: cover;
+            margin: 0 auto 20px auto; /* top 0, horizontal auto, bottom 20px */
+            border: 1px solid #ccc;
+            display: block; /* ensures margin auto centers it */
+        }
+
+    </style>
+</head>
+<body>
+
+<form id="editForm">
+    <h2>Edit Item</h2>
+    <img id="imagePreview" src="" alt="Food Image" class="image-preview">
+    <input type="text" id="food_name" placeholder="Food Name" required/>
+    <textarea id="description" placeholder="Description"></textarea>
+    <input type="text" id="price" placeholder="Price" required/>
+    <button type="submit">Update Item</button>
+</form>
+
+<script>
+    const token = localStorage.getItem("VyanjanamAdminToken");
+    const item = JSON.parse(localStorage.getItem("editItemDataSingle") || "{}");
+
+
+    const foodName = document.getElementById("food_name");
+    const description = document.getElementById("description");
+    const price = document.getElementById("price");
+    const imagePreview = document.getElementById("imagePreview");
+
+    foodName.value = item.food_name || "";
+    description.value = item.descriptions || item.description || "";
+    price.value = item.price || "";
+    imagePreview.src = item.image_url || "";
+
+    // Submit form
+    document.getElementById("editForm").onsubmit = async (e) => {
+        e.preventDefault();
+
+        const updatedItem = {
+            food_name: foodName.value,
+            category:item.categoryName,
+            sub_category:item.sub_category,
+            descriptions: description.value,
+            price: price.value
+        };
+
+        try {
+            const res = await fetch(`https://restaurantfoodorderingsystem-6.onrender.com/edit-foodItem`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token
+                },
+                body: JSON.stringify(updatedItem)
+            });
+
+            if (res.ok) {
+                alert("Item updated successfully!");
+                localStorage.removeItem("editItemDataSingle");
+                window.location.href = "view_all_items.html";
+            } else {
+                alert("Failed to update item");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error updating item.");
+        }
+    };
+</script>
+
+</body>
+</html>
