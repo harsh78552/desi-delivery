@@ -55,7 +55,7 @@ class FoodDatabase:
                 else:
                     item_dict = item
                 if item_dict.get('food_name') == food_name:
-                    return [item_dict], 200
+                    return item_dict, 200
 
         result = self.collection.find()
         result_list = []
