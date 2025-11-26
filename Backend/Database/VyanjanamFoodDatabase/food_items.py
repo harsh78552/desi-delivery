@@ -1,5 +1,3 @@
-import json
-
 from bson import ObjectId
 from pymongo import MongoClient
 
@@ -44,7 +42,8 @@ class FoodDatabase:
             category_data = self.collection.find_one({'category': category})
             if not category_data:
                 return {'message': 'category not found'}, 404
-            item_list = json.loads(category_data['items'][0])
+            item_list = category_data['items'][0]
+            print(type(item_list))
             for item in item_list:
                 if item['food_name'] == food_name:
                     print(item)
