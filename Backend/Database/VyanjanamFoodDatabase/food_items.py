@@ -43,10 +43,9 @@ class FoodDatabase:
             if not category_data:
                 return {'message': 'category not found'}, 404
             item_list = category_data['items'][0]
-            print(type(item_list))
             for item in item_list:
+                print(type(item))
                 if item['food_name'] == food_name:
-                    print(item)
                     return [item]
 
         result = self.collection.find()
