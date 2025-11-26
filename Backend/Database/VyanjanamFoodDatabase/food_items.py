@@ -43,7 +43,7 @@ class FoodDatabase:
             if not category_data:
                 return {'message': 'category not found'}, 404
             for item in category_data['items'][0]:
-                if item['food_name'] == food_name:
+                if item[0]['food_name'] == food_name:
                     print(item)
                     return [item]
 
