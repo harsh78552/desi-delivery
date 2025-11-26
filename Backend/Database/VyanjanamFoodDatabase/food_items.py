@@ -46,8 +46,8 @@ class FoodDatabase:
                 return {'message': 'category not found'}, 404
             item_list = category_data['items'][0]
             for item in item_list:
-                json.loads(item)
-                if item['food_name'] == food_name:
+                item_dict = json.loads(item)
+                if item_dict['food_name'] == food_name:
                     return [item]
 
         result = self.collection.find()
