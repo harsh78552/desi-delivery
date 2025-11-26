@@ -44,7 +44,8 @@ class FoodDatabase:
             category_data = self.collection.find_one({'category': category})
             if not category_data:
                 return {'message': 'category not found'}, 404
-            for item in json.load(category_data['items'][0]):
+            item_list = json.load(category_data['items'][0])
+            for item in item_list:
                 if item['food_name'] == food_name:
                     print(item)
                     return [item]
