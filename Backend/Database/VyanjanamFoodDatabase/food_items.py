@@ -44,6 +44,7 @@ class FoodDatabase:
                 return {'message': 'category not found'}, 404
             for item in category.get('food_name', []):
                 if item.get('food_name').lower() == food_name.lower():
+                    print(item)
                     return item, 200
 
         result = self.collection.find()

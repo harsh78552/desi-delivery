@@ -32,7 +32,7 @@ class MenuItem(MethodView):
     @blp.response(200, FoodSchema(many=True))
     def get(self):
         category = request.args.get('category')
-        food_name = request.args.get('food_name')
+        food_name = request.args.get('item_name')
         print(category,food_name)
         item_data = self.menu_data.get_food_data(category, food_name)
         print(item_data)
