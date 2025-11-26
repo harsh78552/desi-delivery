@@ -73,15 +73,28 @@
                 `https://desi-delivery.onrender.com/menu/item?category=${category}&item_name=${itemName}`,
                 {
                     method: "GET",
-                     headers: { "Authorization": "Bearer " + token, "Content-Type":"application/json" }
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Content-Type": "application/json"
+                    }
                 }
             );
 
-            const item = await res.json();
+            const data = await res.json();
+
+            // ⚠ Backend returns LIST → pick 1st element
+            const item = data[0];
+
+            if (!item) {
+                document.getElementById("food-detail").innerHTML =
+                    "<b>Item not found.</b>";
+                return;
+            }
 
             document.getElementById("food-detail").innerHTML = `
                 <div class="card">
                     <img src="${item.image_url}" alt="">
+
                     <h2>${item.food_name}</h2>
                     <p>${item.descriptions}</p>
                     <h3>₹${item.price}</h3>
@@ -101,7 +114,6 @@
             document.getElementById("food-detail").innerHTML =
                 "<b>Error loading item.</b>";
             console.log(err);
-
         }
     }
 
