@@ -52,7 +52,7 @@ class FoodDatabase:
                     except json.JSONDecodeError:
                         continue
                 else:
-                    item_dict = json.loads(item)
+                    item_dict = item
                 if item_dict.get('food_name') == food_name:
                     return [item]
 
