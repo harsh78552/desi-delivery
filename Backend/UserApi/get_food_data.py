@@ -33,7 +33,5 @@ class MenuItem(MethodView):
     def get(self):
         category = request.args.get('category')
         food_name = request.args.get('item_name')
-        print(category,food_name)
         item_data = self.item_data.get_food_data(category, food_name)
-        print(item_data)
         return item_data
