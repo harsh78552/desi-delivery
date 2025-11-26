@@ -42,10 +42,9 @@ class FoodDatabase:
             category_data = self.collection.find_one({'category': category})
             if not category_data:
                 return {'message': 'category not found'}, 404
-            print(category_data)
             for item in category_data.get('food_name', []):
+                print(item)
                 if item.get('food_name').lower() == food_name.lower():
-                    print(item)
                     return item, 200
 
         result = self.collection.find()
