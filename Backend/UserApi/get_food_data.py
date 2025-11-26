@@ -29,10 +29,8 @@ class MenuItem(MethodView):
 
     @jwt_required(locations=['headers'])
     @checkRole('user')
-    @blp.response(200, FoodSchema(many=True))
     def get(self):
         category = request.args.get('category')
         food_name = request.args.get('item_name')
         item_data = self.item_data.get_food_data(category, food_name)
-        print(item_data)
         return item_data
