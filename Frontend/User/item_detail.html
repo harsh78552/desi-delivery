@@ -73,9 +73,7 @@
                 `https://desi-delivery.onrender.com/menu/item?category=${category}&item_name=${itemName}`,
                 {
                     method: "GET",
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
+                     headers: { "Authorization": "Bearer " + token, "Content-Type":"application/json" }
                 }
             );
 
