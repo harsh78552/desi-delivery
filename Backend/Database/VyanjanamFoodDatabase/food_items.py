@@ -44,7 +44,7 @@ class FoodDatabase:
             category_data = self.collection.find_one({'category': category})
             if not category_data:
                 return {'message': 'category not found'}, 404
-            item_list = category_data['items'][0]
+            item_list = category_data['items']
             for item in item_list:
                 if isinstance(item, str):
                     try:
