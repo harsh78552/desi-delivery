@@ -46,7 +46,7 @@ class FoodDatabase:
                 return {'message': 'category not found'}, 404
             item_list = category_data['items'][0]
             for item in item_list:
-                if item(isinstance, str):
+                if isinstance(item, str):
                     try:
                         item_dict = json.loads(item)
                     except json.JSONDecodeError:
