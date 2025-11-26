@@ -37,7 +37,15 @@ class FoodDatabase:
         except Exception as error:
             return str(error), 500
 
-    def get_food_data(self):
+    def get_food_data(self, category=None, food_name=None):
+        if category and food_name:
+            data = self.collection.find_one({'category': category})
+            if not data:
+                return {'message': 'category not found'}, 404
+            for item in category.get('food_name', []):
+                if item.get('food_name').lower() == food_name.lower():
+                    return item, 200
+
         result = self.collection.find()
         result_list = []
         for data in result:
@@ -70,6 +78,3 @@ class FoodDatabase:
                 return False
         except Exception as error:
             return str(error)
-
-
-

@@ -1,5 +1,6 @@
 from Database.VyanjanamFoodDatabase.food_items import FoodDatabase
 from Schemas.user_schema.get_all_item_schema import FoodSchema
+from flask import request
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt
 from flask_smorest import Blueprint
@@ -19,3 +20,18 @@ class Menu(MethodView):
     def get(self):
         menu_data = self.menu_data.get_food_data()
         return menu_data
+
+
+@blp.route("/menu/item")
+class MenuItem(MethodView):
+    def __init__(self):
+        self.item_data = FoodDatabase()
+
+    @jwt_required(locations=['headers'])
+    @checkRole('user')
+    @blp.response(200, FoodSchema(many=True))
+    def get(self):
+        category = request.args.get('category')
+        food_name = request.args.get('food_name')
+        item_data = self.menu_data.get_food_data(category, food_name)
+        return item_data

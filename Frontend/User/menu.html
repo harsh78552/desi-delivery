@@ -11,7 +11,6 @@
             background: #f2f2f2;
         }
 
-        /* NAVBAR (Amazon style) */
         .navbar {
             width: 100%;
             background: #131921;
@@ -62,7 +61,6 @@
         .about-btn { background: #ffa31a; }
         .logout-btn { background: #e65c00; color: white; }
 
-        /* CATEGORY BOXES */
         .category-box {
             background: white;
             padding: 15px;
@@ -94,7 +92,6 @@
             border-radius: 8px;
         }
 
-        /* Toast messages */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -128,7 +125,6 @@
     <div class="nav-left">Food Ordering</div>
 
     <div class="nav-categories" id="category-list">
-        <!-- Categories will auto-load here -->
     </div>
 
     <div class="nav-right">
@@ -142,7 +138,7 @@
 <div id="menu-container" style="padding: 20px;">Loading...</div>
 
 <script>
-    // Load Menu
+
     async function loadMenu() {
         const token = localStorage.getItem("userToken");
 
@@ -170,19 +166,18 @@
             navbarCategories.innerHTML = "";
 
             menuData.forEach(cat => {
-                // Navbar category
+
                 const catTab = document.createElement("span");
                 catTab.innerText = cat.category;
                 catTab.onclick = () => scrollToCategory(cat.category);
                 navbarCategories.appendChild(catTab);
 
-                // Category box
                 const box = document.createElement("div");
                 box.classList.add("category-box");
                 box.id = cat.category.replace(/\s+/g, "-");
 
                 const itemsHTML = cat.items.map(item => `
-                    <div class="food-card" onclick="viewFoodDetail('${item._id}')">
+                    <div class="food-card" onclick="viewFoodDetail('${cat.category}', '${item.food_name}')">
                         <img src="${item.image_url}" alt="">
                         <div>
                             <h4>${item.food_name}</h4>
@@ -204,20 +199,19 @@
         }
     }
 
-    // Scroll to category section
     function scrollToCategory(catName) {
         const id = catName.replace(/\s+/g, "-");
         const section = document.getElementById(id);
         section.scrollIntoView({ behavior: "smooth" });
     }
 
-    // View food detail
-    function viewFoodDetail(foodId) {
-        localStorage.setItem("selectedFoodId", foodId);
+    /* 🔥 UPDATED FUNCTION */
+    function viewFoodDetail(category, foodName) {
+        localStorage.setItem("selectedCategory", category);
+        localStorage.setItem("selectedItemName", foodName);
         window.location.href = "food_detail.html";
     }
 
-    // Profile button
     function goProfile() {
         const token = localStorage.getItem("userToken");
         if (!token) {
@@ -228,7 +222,6 @@
         window.location.href = "user_profile.html";
     }
 
-    // About button
     function goAbout() {
         const token = localStorage.getItem("userToken");
         if (!token) {
@@ -239,14 +232,12 @@
         window.location.href = "about_us.html";
     }
 
-    // Logout
     function logout() {
         localStorage.removeItem("userToken");
         showToast("Logged out successfully!", "success");
         setTimeout(() => window.location.href = "user_login.html", 1000);
     }
 
-    // Toast function
     function showToast(message, type="info") {
         const toast = document.createElement("div");
         toast.className = `toast ${type}`;
