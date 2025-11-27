@@ -68,9 +68,17 @@
 
 <script>
     // Load data from localStorage
+    const category = localStorage.getItem("orderCategory");
+    const name = localStorage.getItem("orderItem");
     const qty = parseInt(localStorage.getItem("orderQty"));
     const price = parseInt(localStorage.getItem("orderPrice"));
     const total = qty * price;
+
+    // SHOW IN FORM
+    document.getElementById("food-category").value = category;
+    document.getElementById("food-name").value = name;
+    document.getElementById("food-qty").value = qty;
+    document.getElementById("food-total").value = "₹" + total;
 
     // SUBMIT ORDER
     document.getElementById("submit-order").addEventListener("submit", async function(e){
@@ -83,8 +91,8 @@
             delivery_address: document.getElementById("user-address").value,
             pin_code: document.getElementById("user-pin").value,
 
-            food_category: localStorage.getItem("orderCategory"),
-            food_name: localStorage.getItem("orderItem"),
+            food_category: category,
+            food_name: name,
             quantity: qty,
             price: total
         };
@@ -113,6 +121,7 @@
         }
     });
 </script>
+
 
 </body>
 </html>
