@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Place Order</title>
+    <style>
+        body { font-family: Arial; background:#f4f4f4; padding:20px; }
+        .form-box {
+            max-width:420px;
+            margin:auto;
+            background:white;
+            padding:20px;
+            border-radius:12px;
+            box-shadow:0 4px 15px rgba(0,0,0,0.2);
+        }
+        input, textarea {
+            width:100%; padding:10px; margin:8px 0;
+            border:1px solid #ddd; border-radius:8px;
+        }
+        button {
+            width:100%; padding:12px;
+            background:#ff5722; color:white;
+            border:none; border-radius:8px;
+            cursor:pointer; font-size:17px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-box">
+    <h2>Order Details</h2>
+
+    <form id="submit-order">
+
+        <label>Your Name</label>
+        <input id="user-name" required>
+
+        <label>Email</label>
+        <input id="user-email" required>
+
+        <label>Contact</label>
+        <input id="user-contact" required>
+
+        <label>Address</label>
+        <textarea id="user-address" required></textarea>
+
+        <label>PIN</label>
+        <input id="user-pin" required>
+
+        <h3>Food Information</h3>
+
+        <label>Category</label>
+        <input id="food-category" readonly>
+
+        <label>Food Name</label>
+        <input id="food-name" readonly>
+
+        <label>Quantity</label>
+        <input id="food-qty" readonly>
+
+        <label>Total Price</label>
+        <input id="food-total" readonly>
+
+        <button type="submit">Submit Order</button>
+    </form>
+</div>
+
+
+<script>
+    // Load from localStorage
+    document.getElementById("food-category").value = localStorage.getItem("orderCategory");
+    document.getElementById("food-name").value = localStorage.getItem("orderItem");
+    document.getElementById("food-qty").value = localStorage.getItem("orderQty");
+
+    const total = parseInt(localStorage.getItem("orderQty")) * parseInt(localStorage.getItem("orderPrice"));
+    document.getElementById("food-total").value = "₹" + total;
+
+
+    // SUBMIT ORDER
+    document.getElementById("submit-order").addEventListener("submit", async function(e){
+        e.preventDefault();
+
+        const orderData = {
+            name: document.getElementById("user-name").value,
+            email: document.getElementById("user-email").value,
+            contact: document.getElementById("user-contact").value,
+            address: document.getElementById("user-address").value,
+            pin: document.getElementById("user-pin").value,
+            food_category: localStorage.getItem("orderCategory"),
+            food_name: localStorage.getItem("orderItem"),
+            qty: localStorage.getItem("orderQty")
+        };
+
+        const token = localStorage.getItem("userToken");
+
+        const res = await fetch("https://desi-delivery.onrender.com/item-order", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify(orderData)
+        });
+
+        const data = await res.json();
+
+        alert("Order placed successfully!");
+        window.location.href = "menu.html";
+    });
+</script>
+
+</body>
+</html>

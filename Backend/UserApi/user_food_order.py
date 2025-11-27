@@ -16,7 +16,8 @@ class FoodOrder(MethodView):
     @blp.arguments(UserOrderFoodSchema)
     def post(self, data):
         claims = get_jwt()
-        result = self.food_order_db.ordered_food_data(claims['sub'], data['user_name'], data['itemImage'],
+        print(data)
+        result = self.food_order_db.ordered_food_data(claims['sub'], data['user_name'],
                                                       data['food_id'], data['food_name'],
                                                       data['quantity'], data['price'], data['delivery_address'])
         return result

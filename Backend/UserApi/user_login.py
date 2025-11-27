@@ -26,7 +26,7 @@ class UserLogin(MethodView):
             if password == result['password']:
                 if result['role'] == 'user':
                     access_token = create_access_token(identity=email, additional_claims=({'role': result['role']}),
-                                                       expires_delta=timedelta(hours=5))
+                                                       expires_delta=timedelta(hours=1))
                     response = jsonify({'message': "user login successfully", 'access_token': access_token})
                     set_access_cookies(response, access_token)
                     return response, 200

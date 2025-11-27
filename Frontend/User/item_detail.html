@@ -256,17 +256,18 @@
         alert("Added to cart - Qty: " + qty);
     }
 
-    /* POPUP FUNCTIONS */
 
     function openOrderForm() {
-        const qty = document.getElementById("qty").innerText;
+    const qty = document.getElementById("qty").innerText;
 
-        document.getElementById("food-category").value = currentItem.sub_category;
-        document.getElementById("food-name").value = currentItem.food_name;
-        document.getElementById("food-qty").value = qty;
+    localStorage.setItem("orderCategory", currentItem.sub_category);
+    localStorage.setItem("orderItem", currentItem.food_name);
+    localStorage.setItem("orderQty", qty);
+    localStorage.setItem("orderPrice", currentItem.price);
 
-        document.getElementById("order-popup").style.display = "flex";
-    }
+    window.location.href = "order_page.html";   // new page
+}
+
 
     function closePopup() {
         document.getElementById("order-popup").style.display = "none";
