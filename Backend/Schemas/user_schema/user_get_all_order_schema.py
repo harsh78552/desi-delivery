@@ -2,13 +2,16 @@ from marshmallow import Schema, fields
 
 
 class OrderSchema(Schema):
-    date = fields.DateTime()
-    delivery_address = fields.String()
-    item = fields.String()
-    name = fields.String()
-    quantity = fields.String()
-    total_price = fields.String()
+    name = fields.String(required=True)
+    date = fields.DateTime(required=True)
+    delivery_address = fields.String(required=True)
+    pincode = fields.String()
+    food_name = fields.String(required=True)
+    food_category = fields.String()
+    quantity = fields.Int(required=True)
+    total_price = fields.Float(required=True)
 
 
 class UserOrderSchema(Schema):
-    order_summary=fields.List(fields.Nested(OrderSchema))
+    email = fields.Email(required=True)
+    order_summary = fields.List(fields.Nested(OrderSchema))
