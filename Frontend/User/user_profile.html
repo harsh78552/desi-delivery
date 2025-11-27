@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Dashboard - Vyanjanam">
+    <title>User Dashboard - Vyanjanam</title>
     <link rel="icon" href="../image/myImage.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -13,7 +13,6 @@
             background: #f3f3f3;
         }
 
-        /* Top Bar */
         .top-bar {
             background: #232f3e;
             color: white;
@@ -23,7 +22,6 @@
             text-align: center;
         }
 
-        /* Loader */
         .loader {
             text-align: center;
             margin-top: 40px;
@@ -32,7 +30,6 @@
             display: block;
         }
 
-        /* Main Box */
         .profile-box {
             width: 90%;
             max-width: 420px;
@@ -69,7 +66,6 @@
             background: #eee;
         }
 
-        /* Buttons */
         .btn {
             width: 100%;
             padding: 12px;
@@ -91,14 +87,13 @@
 
 <div class="top-bar">My Dashboard</div>
 
-<!-- Loader -->
 <div id="loader" class="loader">Loading profile...</div>
 
-<!-- Profile Box -->
 <div id="profileBox" class="profile-box">
     <h2>User Profile</h2>
 
     <form id="profileForm">
+
         <label>Name</label>
         <input id="name" disabled>
 
@@ -133,7 +128,6 @@
     const token = localStorage.getItem("userToken");
     if (!token) window.location.href = "user_login.html";
 
-    // ENABLE EDIT MODE
     function enableEdit() {
         document.querySelectorAll("#profileForm input, #profileForm textarea").forEach(el => {
             if (el.id !== "email" && el.id !== "name") el.disabled = false;
@@ -143,7 +137,6 @@
         document.querySelector(".save-btn").style.display = "block";
     }
 
-    // LOAD PROFILE
     async function loadProfile() {
         try {
             const res = await fetch("https://desi-delivery.onrender.com/user-profile", {
@@ -163,6 +156,8 @@
 
                 document.getElementById("loader").style.display = "none";
                 document.getElementById("profileBox").style.display = "block";
+            } else {
+                console.log("Profile load failed");
             }
         } catch (e) {
             console.log(e);
@@ -171,7 +166,6 @@
 
     loadProfile();
 
-    // SAVE (UPDATE USER PROFILE)
     document.getElementById("profileForm").addEventListener("submit", async function(e){
         e.preventDefault();
 
@@ -202,7 +196,6 @@
             alert("Something went wrong!");
         }
     });
-
 </script>
 
 </body>
