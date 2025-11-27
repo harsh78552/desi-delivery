@@ -69,50 +69,47 @@
     if (!token) window.location.href = "user_login.html";
 
     async function loadOrders() {
-    try {
-        const res = await fetch("https://desi-delivery.onrender.com/get-all-ordered-data", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
-            },
-            body: JSON.stringify({})
-        });
+        try {
+            const res = await fetch("https://desi-delivery.onrender.com/get-all-ordered-data", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({})
+            });
 
-        const orders = await res.json();
-        console.log(orders);
+            const orders = await res.json();
+            console.log(orders);
 
-        document.getElementById("loader").style.display = "none";
+            document.getElementById("loader").style.display = "none";
 
-        const container = document.getElementById("ordersContainer");
+            const container = document.getElementById("ordersContainer");
 
-        if (!Array.isArray(orders) || orders.length === 0) {
-            container.innerHTML = "<p style='text-align:center;'>No orders found.</p>";
-            return;
+            if (!Array.isArray(orders) || orders.length === 0) {
+                container.innerHTML = "<p style='text-align:center;'>No orders found.</p>";
+                return;
+            }
+
+            orders.forEach(o => {
+                const box = document.createElement("div");
+                box.className = "order-box";
+
+                box.innerHTML = `
+                    <h3>${o.food_name}</h3>
+                    <p><b>Category:</b> ${o.category}</p>
+                    <p><b>Quantity:</b> ${o.quantity}</p>
+                    <p><b>Price:</b> ₹${o.price}</p>
+                    <p><b>Address:</b> ${o.delivery_address}</p>
+                    <p><b>Date:</b> ${o.date || "Not Available"}</p>
+                `;
+                container.appendChild(box);
+            });
+
+        } catch (err) {
+            console.log(err);
         }
-
-        orders.forEach(o => {
-            const box = document.createElement("div");
-            box.className = "order-box";
-
-            box.innerHTML = `
-                <h3>${o.food_name}</h3>
-                <p><b>Category:</b> ${o.category}</p>
-                <p><b>Quantity:</b> ${o.quantity}</p>
-                <p><b>Price:</b> ₹${o.price}</p>
-                <p><b>Address:</b> ${o.delivery_address}</p>
-                <p><b>Date:</b> ${o.date || "Not Available"}</p>
-            `;
-            container.appendChild(box);
-        });
-
-    } catch (err) {
-        console.log(err);
     }
-}
-
-
-    loadOrders();
 </script>
 
 </body>
