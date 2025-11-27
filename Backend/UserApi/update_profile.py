@@ -15,8 +15,9 @@ class ProfileUpdate(MethodView):
 
     @jwt_required(locations=['headers'])
     @checkRole('user')
-    @blp.arguments(UserUpdateProfileSchema)
+    # @blp.arguments(UserUpdateProfileSchema)
     def put(self, data):
+        print(data)
         claims = get_jwt()
         email = claims['sub']
 

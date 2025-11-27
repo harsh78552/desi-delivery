@@ -2,61 +2,55 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Dashboard - Vyanjanam</title>
-
-    <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+    <title>User Dashboard - Vyanjanam">
+    <link rel="icon" href="../image/myImage.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
-            background: #f2f2f2;
+            font-family: Arial, sans-serif;
+            background: #f3f3f3;
         }
 
-        /* TOP BAR */
+        /* Top Bar */
         .top-bar {
             background: #232f3e;
+            color: white;
             padding: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: white;
-        }
-
-        .icon-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .top-bar span {
             font-size: 18px;
             font-weight: bold;
+            text-align: center;
         }
 
-        /* PROFILE CARD */
-        .profile-frame {
+        /* Loader */
+        .loader {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 18px;
+            color: #444;
+            display: block;
+        }
+
+        /* Main Box */
+        .profile-box {
+            width: 90%;
             max-width: 420px;
             margin: 20px auto;
             background: white;
-            padding: 22px;
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
         }
 
         h2 {
-            margin-top: 0;
             text-align: center;
-            font-size: 22px;
-            font-weight: 600;
         }
 
         label {
+            margin-top: 10px;
             display: block;
-            margin-top: 14px;
             font-size: 14px;
             font-weight: bold;
         }
@@ -65,9 +59,9 @@
             width: 100%;
             padding: 10px;
             margin-top: 6px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
             font-size: 14px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
             background: #f7f7f7;
         }
 
@@ -75,39 +69,7 @@
             background: #eee;
         }
 
-        /* DASHBOARD BUTTONS */
-        .dashboard {
-            max-width: 420px;
-            margin: 20px auto;
-            display: flex;
-            gap: 20px;
-            flex-direction: column;
-        }
-
-        .dash-btn {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            border: none;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .dash-btn:hover {
-            background: #f7f7f7;
-        }
-
-        .dash-icon {
-            font-size: 28px;
-            color: #232f3e;
-        }
-
-        /* EDIT & SAVE BUTTONS */
+        /* Buttons */
         .btn {
             width: 100%;
             padding: 12px;
@@ -115,33 +77,26 @@
             border: none;
             font-size: 16px;
             cursor: pointer;
+            margin-top: 15px;
             font-weight: bold;
-            margin-top: 18px;
         }
 
-        .edit-btn {
-            background: #ffa41c;
-        }
-
-        .save-btn {
-            background: #ff9900;
-            display: none;
-        }
+        .edit-btn { background: #ffa41c; }
+        .save-btn { background: #ff9900; display: none; }
+        .orders-btn { background: #232f3e; color: white; }
     </style>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
-<div class="top-bar">
-    <button class="icon-btn" onclick="goBack()">←</button>
-    <span>Dashboard</span>
-    <button class="icon-btn" onclick="toggleMore()">⋮</button>
-</div>
+<div class="top-bar">My Dashboard</div>
 
-<!-- PROFILE CARD -->
-<div class="profile-frame">
-    <h2>User Details</h2>
+<!-- Loader -->
+<div id="loader" class="loader">Loading profile...</div>
+
+<!-- Profile Box -->
+<div id="profileBox" class="profile-box">
+    <h2>User Profile</h2>
 
     <form id="profileForm">
         <label>Name</label>
@@ -163,46 +118,32 @@
         <textarea id="landmark" disabled></textarea>
 
         <label>PIN Code</label>
-        <input id="pin_code" disabled>
+        <input id="pin" disabled>
 
         <button type="button" class="btn edit-btn" onclick="enableEdit()">Edit</button>
-        <button type="submit" class="btn save-btn">Save</button>
+        <button type="submit" class="btn save-btn">Save Changes</button>
+
+        <button type="button" class="btn orders-btn" onclick="window.location='orders.html'">
+            View Orders
+        </button>
     </form>
-</div>
-
-<!-- DASHBOARD BUTTONS -->
-<div class="dashboard">
-    <button class="dash-btn" onclick="window.location.href='orders.html'">
-        <span class="dash-icon">🧾</span>
-        Total Orders
-    </button>
-
-    <button class="dash-btn" onclick="window.location.href='settings.html'">
-        <span class="dash-icon">⚙️</span>
-        Settings
-    </button>
 </div>
 
 <script>
     const token = localStorage.getItem("userToken");
+    if (!token) window.location.href = "user_login.html";
 
-    if (!token) {
-        window.location.href = "user_login.html";
-    }
-
-    function goBack() {
-        window.location.href = "menu.html";
-    }
-
+    // ENABLE EDIT MODE
     function enableEdit() {
-        document.querySelectorAll('#profileForm input, #profileForm textarea').forEach(el => {
-            if (el.id !== "email") el.disabled = false;
+        document.querySelectorAll("#profileForm input, #profileForm textarea").forEach(el => {
+            if (el.id !== "email" && el.id !== "name") el.disabled = false;
         });
 
         document.querySelector(".edit-btn").style.display = "none";
         document.querySelector(".save-btn").style.display = "block";
     }
 
+    // LOAD PROFILE
     async function loadProfile() {
         try {
             const res = await fetch("https://desi-delivery.onrender.com/user-profile", {
@@ -212,13 +153,16 @@
             if (res.ok) {
                 const p = await res.json();
 
-                document.getElementById("name").value = p.name || "";
-                document.getElementById("email").value = p.email || "";
-                document.getElementById("contact").value = p.contact || "";
-                document.getElementById("permanent").value = p.permanent_address || "";
-                document.getElementById("residential").value = p.residential_address || "";
-                document.getElementById("landmark").value = p.landmark || "";
-                document.getElementById("pin_code").value = p.pin_code || "";
+                document.getElementById("name").value = p.name;
+                document.getElementById("email").value = p.email;
+                document.getElementById("contact").value = p.contact;
+                document.getElementById("permanent").value = p.permanent_address;
+                document.getElementById("residential").value = p.residential_address;
+                document.getElementById("landmark").value = p.landmark;
+                document.getElementById("pin").value = p.pin_code;
+
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("profileBox").style.display = "block";
             }
         } catch (e) {
             console.log(e);
@@ -226,6 +170,39 @@
     }
 
     loadProfile();
+
+    // SAVE (UPDATE USER PROFILE)
+    document.getElementById("profileForm").addEventListener("submit", async function(e){
+        e.preventDefault();
+
+        const updatedData = {
+            contact: document.getElementById("contact").value,
+            permanent_address: document.getElementById("permanent").value,
+            residential_address: document.getElementById("residential").value,
+            landmark: document.getElementById("landmark").value,
+            pin_code: document.getElementById("pin").value
+        };
+
+        const res = await fetch("https://desi-delivery.onrender.com/user-update-profile", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify(updatedData)
+        });
+
+        const data = await res.json();
+        console.log(data);
+
+        if (res.ok) {
+            alert("Profile updated successfully!");
+            window.location.reload();
+        } else {
+            alert("Something went wrong!");
+        }
+    });
+
 </script>
 
 </body>
