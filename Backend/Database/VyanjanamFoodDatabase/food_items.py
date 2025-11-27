@@ -50,7 +50,6 @@ class FoodDatabase:
                     try:
                         item_dict = json.loads(item)
                     except json.JSONDecodeError:
-                        print("Invalid JSON string:", item)
                         continue
                 else:
                     item_dict = item
