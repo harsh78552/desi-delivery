@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Profile - Vyanjanam</title>
+    <title>User Dashboard - Vyanjanam</title>
 
     <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,10 +11,10 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            background: #fafafa;
+            background: #f2f2f2;
         }
 
-        /* AMAZON STYLE TOP BAR */
+        /* TOP BAR */
         .top-bar {
             background: #232f3e;
             padding: 14px;
@@ -22,11 +22,6 @@
             align-items: center;
             justify-content: space-between;
             color: white;
-        }
-
-        .top-bar span {
-            font-size: 18px;
-            font-weight: bold;
         }
 
         .icon-btn {
@@ -37,10 +32,15 @@
             cursor: pointer;
         }
 
-        /* MAIN FRAME */
+        .top-bar span {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* PROFILE CARD */
         .profile-frame {
             max-width: 420px;
-            margin: 30px auto;
+            margin: 20px auto;
             background: white;
             padding: 22px;
             border-radius: 12px;
@@ -75,7 +75,39 @@
             background: #eee;
         }
 
-        /* AMAZON STYLE BUTTONS */
+        /* DASHBOARD BUTTONS */
+        .dashboard {
+            max-width: 420px;
+            margin: 20px auto;
+            display: flex;
+            gap: 20px;
+            flex-direction: column;
+        }
+
+        .dash-btn {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .dash-btn:hover {
+            background: #f7f7f7;
+        }
+
+        .dash-icon {
+            font-size: 28px;
+            color: #232f3e;
+        }
+
+        /* EDIT & SAVE BUTTONS */
         .btn {
             width: 100%;
             padding: 12px;
@@ -89,65 +121,25 @@
 
         .edit-btn {
             background: #ffa41c;
-            color: #111;
         }
 
         .save-btn {
             background: #ff9900;
-            color: #111;
             display: none;
-        }
-
-        .orders-btn {
-            background: #232f3e;
-            color: white;
-            margin-top: 10px;
-        }
-
-        .more-menu {
-            display: none;
-            position: absolute;
-            right: 10px;
-            top: 55px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            width: 150px;
-            padding: 10px 0;
-        }
-
-        .more-menu button {
-            width: 100%;
-            padding: 8px 12px;
-            background: none;
-            border: none;
-            text-align: left;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .more-menu button:hover {
-            background: #f4f4f4;
         }
     </style>
 </head>
 
 <body>
 
-<!-- TOP BAR  -->
+<!-- TOP BAR -->
 <div class="top-bar">
     <button class="icon-btn" onclick="goBack()">←</button>
-    <span>My Profile</span>
+    <span>Dashboard</span>
     <button class="icon-btn" onclick="toggleMore()">⋮</button>
 </div>
 
-<!-- MORE MENU -->
-<div class="more-menu" id="moreMenu">
-    <button onclick="window.location.href='orders.html'">My Orders</button>
-    <button onclick="logout()">Logout</button>
-</div>
-
-<!-- MAIN PROFILE FRAME -->
+<!-- PROFILE CARD -->
 <div class="profile-frame">
     <h2>User Details</h2>
 
@@ -175,34 +167,49 @@
 
         <button type="button" class="btn edit-btn" onclick="enableEdit()">Edit</button>
         <button type="submit" class="btn save-btn">Save</button>
-
-        <button class="btn orders-btn" onclick="window.location.href='orders.html'" type="button">
-            View Orders
-        </button>
     </form>
+</div>
+
+<!-- DASHBOARD BUTTONS -->
+<div class="dashboard">
+    <button class="dash-btn" onclick="window.location.href='orders.html'">
+        <span class="dash-icon">🧾</span>
+        Total Orders
+    </button>
+
+    <button class="dash-btn" onclick="window.location.href='settings.html'">
+        <span class="dash-icon">⚙️</span>
+        Settings
+    </button>
 </div>
 
 <script>
     const token = localStorage.getItem("userToken");
 
-    if(!token){ window.location.href="user_login.html"; }
-
-    function enableEdit(){
-        document.querySelectorAll('#profileForm input, #profileForm textarea').forEach(el=>{
-            if(el.id !== 'name' && el.id !== 'email') el.disabled = false;
-        });
-        document.querySelector('.edit-btn').style.display="none";
-        document.querySelector('.save-btn').style.display="inline-block";
+    if (!token) {
+        window.location.href = "user_login.html";
     }
 
-    async function loadProfile(){
-        const loading = document.getElementById("loading");
-        try{
+    function goBack() {
+        window.location.href = "menu.html";
+    }
+
+    function enableEdit() {
+        document.querySelectorAll('#profileForm input, #profileForm textarea').forEach(el => {
+            if (el.id !== "email") el.disabled = false;
+        });
+
+        document.querySelector(".edit-btn").style.display = "none";
+        document.querySelector(".save-btn").style.display = "block";
+    }
+
+    async function loadProfile() {
+        try {
             const res = await fetch("https://desi-delivery.onrender.com/user-profile", {
-                headers: { "Authorization":"Bearer "+token }
+                headers: { "Authorization": "Bearer " + token }
             });
 
-            if(res.ok){
+            if (res.ok) {
                 const p = await res.json();
 
                 document.getElementById("name").value = p.name || "";
@@ -212,11 +219,10 @@
                 document.getElementById("residential").value = p.residential_address || "";
                 document.getElementById("landmark").value = p.landmark || "";
                 document.getElementById("pin_code").value = p.pin_code || "";
-
-                loading.style.display="none";
-                document.getElementById("profileContainer").style.display="block";
             }
-        } catch(e){ console.log(e); }
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     loadProfile();
