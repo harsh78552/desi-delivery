@@ -46,6 +46,7 @@ class OrderDatabase:
     def get_all_ordered_food_data(self, email=None):
         if email:
             result = self.collection.find_one({'email': email})
+            print(result)
             result['_id'] = str(result.get("_id"))
             return result
         result = self.collection.find().sort('date', -1)
