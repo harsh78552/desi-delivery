@@ -17,7 +17,7 @@ class FoodOrder(MethodView):
     def post(self, data):
         claims = get_jwt()
         print(data)
-        result = self.food_order_db.ordered_food_data(claims['sub'], data['user_name'],
-                                                      data['food_id'], data['food_name'],
-                                                      data['quantity'], data['price'], data['delivery_address'])
-        return result
+        # result = self.food_order_db.ordered_food_data(claims['sub'], data['user_name'],
+        #                                               data['food_id'], data['food_name'],
+        #                                               data['quantity'], data['price'], data['delivery_address'])
+        # return result

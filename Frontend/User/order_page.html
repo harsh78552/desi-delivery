@@ -67,46 +67,44 @@
 
 
 <script>
-    // Load from localStorage
-    document.getElementById("food-category").value = localStorage.getItem("orderCategory");
-    document.getElementById("food-name").value = localStorage.getItem("orderItem");
-    document.getElementById("food-qty").value = localStorage.getItem("orderQty");
-
-    const total = parseInt(localStorage.getItem("orderQty")) * parseInt(localStorage.getItem("orderPrice"));
-    document.getElementById("food-total").value = "₹" + total;
-
-
-    // SUBMIT ORDER
     document.getElementById("submit-order").addEventListener("submit", async function(e){
-        e.preventDefault();
+    e.preventDefault();
 
-        const orderData = {
-            name: document.getElementById("user-name").value,
-            email: document.getElementById("user-email").value,
-            contact: document.getElementById("user-contact").value,
-            address: document.getElementById("user-address").value,
-            pin: document.getElementById("user-pin").value,
-            food_category: localStorage.getItem("orderCategory"),
-            food_name: localStorage.getItem("orderItem"),
-            qty: localStorage.getItem("orderQty")
-        };
+    const orderData = {
+        name: document.getElementById("user-name").value,
+        email: document.getElementById("user-email").value,
+        contact: document.getElementById("user-contact").value,
+        address: document.getElementById("user-address").value,
+        pin: document.getElementById("user-pin").value,
+        food_category: localStorage.getItem("orderCategory"),
+        food_name: localStorage.getItem("orderItem"),
+        qty: parseInt(localStorage.getItem("orderQty"))   // IMPORTANT FIX
+    };
 
-        const token = localStorage.getItem("userToken");
+    const token = localStorage.getItem("userToken");
 
-        const res = await fetch("https://desi-delivery.onrender.com/item-order", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
-            },
-            body: JSON.stringify(orderData)
-        });
+    const res = await fetch("https://desi-delivery.onrender.com/item-order", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(orderData)
+    });
 
-        const data = await res.json();
+    const data = await res.json();
 
+    console.log("API Status:", res.status);
+    console.log("Backend Response:", data);
+
+    if(res.ok){
         alert("Order placed successfully!");
         window.location.href = "menu.html";
-    });
+    } else {
+        alert("Something went wrong!");
+    }
+});
+
 </script>
 
 </body>
