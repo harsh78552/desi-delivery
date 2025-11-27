@@ -24,6 +24,6 @@ class FoodOrder(MethodView):
         food_name = data['food_name']
         quantity = data['quantity']
         price = data['price']
-        result = self.food_order_db.ordered_food_data(name, email, contact, pin_code, delivery_address, food_category,
+        result = self.food_order_db.ordered_food_data(email, name, contact, pin_code, delivery_address, food_category,
                                                       food_name, quantity, price)
         return result
