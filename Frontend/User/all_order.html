@@ -29,10 +29,17 @@
             cursor: pointer;
         }
 
+        #ordersContainer {
+            display: flex;
+            flex-direction: column; /* stack orders vertically */
+            align-items: center;    /* center boxes horizontally */
+            padding-bottom: 20px;
+        }
+
         .order-box {
             width: 90%;
             max-width: 450px;
-            margin: 15px auto;
+            margin: 15px 0; /* vertical spacing between boxes */
             background: white;
             padding: 15px;
             border-radius: 10px;
