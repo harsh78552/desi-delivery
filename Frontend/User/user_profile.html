@@ -3,185 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <title>User Profile - Vyanjanam</title>
-    <meta name="description"
-          content="View and edit your user profile on Vyanjanam. Keep your contact and address information updated.">
-    <meta name="keywords" content="Vyanjanam, User Profile, Restaurant, Indian Cuisine, Edit Profile">
-    <meta name="robots" content="index, follow">
+
     <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
 
-
-    <script type="application/ld+json" id="json-ld">
-        {
-            "@context": "https://schema.org",
-            "@type": "Person",
-            "name": "User Name",
-            "url": "",
-            "description": "User profile page for Vyanjanam website. Users can view and update their contact and address details.",
-            "image": "../image/myImage.jpg"
-        }
-    </script>
-
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fff; display: flex; justify-content: center; align-items: flex-start; padding: 50px; min-height: 100vh; color: #333; }
-        .profile-container { width: 400px; padding: 25px; border-radius: 12px; display: none; animation: fadeIn 0.4s ease; box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
-        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
-        h2 { text-align: center; margin-bottom: 20px; font-weight: 700; font-size: 24px; color: #333; }
-        .back-btn { display: inline-block; margin-bottom: 15px; padding: 8px 15px; border-radius: 20px; background-color: #6c757d; color: #fff; font-weight: 600; cursor: pointer; text-decoration: none; transition: background 0.2s, transform 0.1s; }
-        .back-btn:hover { background-color: #5a6268; transform: translateY(-2px); }
-        label { display: block; margin-top: 15px; font-weight: 600; font-size: 14px; }
-        input, textarea { width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ccc; border-radius: 12px; font-size: 14px; background: #f9f9f9; color: #333; outline: none; transition: background 0.2s, border 0.2s; }
-        input:focus, textarea:focus { background: #fff; border: 1px solid #007bff; }
-        input[disabled], textarea[disabled] { background: #eee; cursor: not-allowed; color: #555; }
-        .actions { margin-top: 20px; text-align: center; }
-        button { padding: 10px 20px; border: none; border-radius: 25px; cursor: pointer; font-size: 15px; font-weight: bold; transition: transform 0.1s ease, box-shadow 0.2s ease; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
-        .edit-btn { background-color: #007bff; color: white; }
-        .save-btn { background-color: #28a745; color: white; margin-left: 10px; display: none; }
-        #messageBox { display: none; text-align: center; margin-bottom: 15px; padding: 10px; border-radius: 8px; font-weight: bold; }
-        #loading { display: flex; justify-content: center; align-items: center; flex-direction: column; font-size: 16px; margin-top: 50px; color: #333; }
-        .spinner { border: 4px solid rgba(0,0,0,0.1); border-top: 4px solid #333; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
-        @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
+        body {
+            margin:0;
+            padding:0;
+            background:#f5f5f5;
+            font-family: 'Inter', sans-serif;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            min-height:100vh;
+        }
+
+        .main-wrapper {
+            width: 420px;
+            background:white;
+            padding:28px;
+            border-radius:18px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.15);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+        .header-bar {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:20px;
+        }
+
+        .header-title {
+            font-size:22px;
+            font-weight:700;
+        }
+
+        .header-btns button {
+            background:#eee;
+            border:none;
+            padding:8px 12px;
+            border-radius:8px;
+            font-size:14px;
+            cursor:pointer;
+            margin-left:6px;
+        }
+
+        .header-btns button:hover {
+            background:#ddd;
+        }
+
+        label {
+            margin-top:14px;
+            display:block;
+            font-size:14px;
+            font-weight:600;
+        }
+
+        input, textarea {
+            width:100%;
+            padding:10px;
+            border-radius:10px;
+            border:1px solid #ddd;
+            background:#fafafa;
+            margin-top:6px;
+            font-size:14px;
+        }
+
+        input:disabled, textarea:disabled {
+            background:#eee;
+            color:#555;
+        }
+
+        .actions {
+            margin-top:20px;
+            text-align:center;
+        }
+
+        .edit-btn, .save-btn {
+            padding:10px 20px;
+            border:none;
+            border-radius:25px;
+            font-size:15px;
+            cursor:pointer;
+            font-weight:600;
+        }
+
+        .edit-btn {
+            background:#007bff;
+            color:white;
+        }
+
+        .save-btn {
+            background:#28a745;
+            color:white;
+            display:none;
+            margin-left:10px;
+        }
+
+        #loading {
+            font-size:17px;
+            color:#333;
+            position:absolute;
+        }
+
+        /* Bottom Buttons */
+        .bottom-actions {
+            margin-top:25px;
+            display:flex;
+            justify-content:space-between;
+        }
+
+        .b-btn {
+            flex:1;
+            background:#ff5722;
+            color:white;
+            padding:12px;
+            text-align:center;
+            border-radius:12px;
+            margin:0 4px;
+            cursor:pointer;
+            font-weight:600;
+        }
+
+        .b-btn:nth-child(2) { background:#6c63ff; }
+        .b-btn:nth-child(3) { background:#2e7d32; }
+
+        .b-btn:hover {
+            opacity:0.9;
+        }
     </style>
 </head>
 <body>
 
-<div id="loading">
-    <div class="spinner"></div>
-    Loading profile...
-</div>
+<div id="loading">Loading profile...</div>
 
-<div class="profile-container" id="profileContainer">
-    <a href="#" class="back-btn" onclick="goBack()"> Back</a>
-    <h2>User Profile</h2>
-    <div id="messageBox"></div>
+<div class="main-wrapper" id="profileContainer" style="display:none;">
+
+    <!-- HEADER -->
+    <div class="header-bar">
+        <div class="header-title">User Profile</div>
+
+        <div class="header-btns">
+            <button onclick="window.location.href='menu.html'">Back</button>
+        </div>
+    </div>
+
     <form id="profileForm">
-        <label for="name">Name</label>
-        <input type="text" id="name" disabled placeholder="Loading...">
 
-        <label for="email">Email</label>
-        <input type="email" id="email" disabled placeholder="Loading...">
+        <label>Name</label>
+        <input id="name" disabled>
 
-        <label for="contact">Contact</label>
-        <input type="text" id="contact" disabled placeholder="Loading...">
+        <label>Email</label>
+        <input id="email" disabled>
 
-        <label for="permanent">Permanent Address</label>
-        <textarea id="permanent" rows="2" disabled placeholder="Loading..."></textarea>
+        <label>Contact</label>
+        <input id="contact" disabled>
 
-        <label for="residential">Residential Address</label>
-        <textarea id="residential" rows="2" disabled placeholder="Loading..."></textarea>
+        <label>Permanent Address</label>
+        <textarea id="permanent" disabled rows="2"></textarea>
 
-        <label for="landmark">Landmark</label>
-        <textarea id="landmark" rows="2" disabled placeholder="Loading..."></textarea>
+        <label>Residential Address</label>
+        <textarea id="residential" disabled rows="2"></textarea>
 
-        <label for="pin_code">Pin Code</label>
-        <input type="text" id="pin_code" disabled placeholder="Loading...">
+        <label>Landmark</label>
+        <textarea id="landmark" disabled rows="2"></textarea>
+
+        <label>Pin Code</label>
+        <input id="pin_code" disabled>
 
         <div class="actions">
             <button type="button" class="edit-btn" onclick="enableEdit()">Edit</button>
             <button type="submit" class="save-btn">Save</button>
         </div>
     </form>
+
+    <!-- Bottom Buttons -->
+    <div class="bottom-actions">
+        <div class="b-btn" onclick="window.location.href='order_page.html'">Order</div>
+        <div class="b-btn" onclick="window.location.href='settings.html'">Settings</div>
+        <div class="b-btn" onclick="window.location.href='more.html'">More</div>
+    </div>
+
 </div>
 
 <script>
     const token = localStorage.getItem("userToken");
 
-    function redirectToLogin() { localStorage.removeItem("userToken"); window.location.replace("user_login.html"); }
-
-    if (!token) redirectToLogin();
-    else {
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            const now = Math.floor(Date.now() / 1000);
-            if (now > payload.exp || (payload.role || '').toLowerCase() !== 'user') redirectToLogin();
-        } catch { redirectToLogin(); }
-    }
-
-    function goBack() { window.location.href = "menu.html"; }
+    if(!token){ window.location.href="user_login.html"; }
 
     function enableEdit(){
         document.querySelectorAll('#profileForm input, #profileForm textarea').forEach(el=>{
-            if(el.id!=='name' && el.id!=='email') el.disabled=false;
+            if(el.id !== 'name' && el.id !== 'email') el.disabled = false;
         });
-        document.querySelector('.edit-btn').style.display='none';
-        document.querySelector('.save-btn').style.display='inline-block';
-    }
-
-    async function updateJSONLD(profile){
-        const jsonLd = {
-            "@context":"https://schema.org",
-            "@type":"Person",
-            "name": profile.name || "User Name",
-            "url":"http://yourwebsite.com/user-profile",
-            "description":"User profile page for Vyanjanam website. Users can view and update their contact and address details.",
-            "image":"/image/myImage.jpg",
-            "email": profile.email || "",
-            "telephone": profile.contact || "",
-            "address": {
-                "@type":"PostalAddress",
-                "streetAddress": profile.residential_address || "",
-                "addressLocality": profile.permanent_address || "",
-                "postalCode": profile.pin_code || "",
-                "addressCountry": "IN"
-            }
-        };
-        const scriptTag = document.getElementById("json-ld");
-        scriptTag.textContent = JSON.stringify(jsonLd);
+        document.querySelector('.edit-btn').style.display="none";
+        document.querySelector('.save-btn').style.display="inline-block";
     }
 
     async function loadProfile(){
-        const container = document.getElementById("profileContainer");
         const loading = document.getElementById("loading");
         try{
-            const res = await fetch(" https://desi-delivery.onrender.com/user-profile", {
-                headers: { "Authorization": "Bearer " + token, "Content-Type":"application/json" }
+            const res = await fetch("https://desi-delivery.onrender.com/user-profile", {
+                headers: { "Authorization":"Bearer "+token }
             });
-            if(res.ok){
-                const profile = await res.json();
-                // Fill form fields
-                ['name','email','contact','permanent','residential','landmark','pin_code'].forEach(id=>{
-                    const key = id==='permanent' ? 'permanent_address' : id==='residential' ? 'residential_address' : id;
-                    document.getElementById(id).value = profile[key] || "";
-                });
-                // Update JSON-LD dynamically
-                updateJSONLD(profile);
-                loading.style.display="none";
-                container.style.display="block";
-            } else { window.location.replace("user_login.html"); }
-        } catch(err){ console.error(err); window.location.replace("user_login.html"); }
-    }
 
-    document.getElementById("profileForm").addEventListener("submit", async e=>{
-        e.preventDefault();
-        const data = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            contact: document.getElementById('contact').value,
-            permanent_address: document.getElementById('permanent').value,
-            residential_address: document.getElementById('residential').value,
-            landmark: document.getElementById('landmark').value,
-            pin_code: document.getElementById('pin_code').value
-        };
-        try{
-            const res = await fetch("http://127.0.0.1:5006/user-update-profile",{
-                method:"PUT",
-                headers: { "Authorization": "Bearer "+token, "Content-Type":"application/json" },
-                body: JSON.stringify(data)
-            });
             if(res.ok){
-                const updated = await res.json();
-                updateJSONLD(updated);
-                document.querySelectorAll('#profileForm input, #profileForm textarea').forEach(el=>{
-                    if(el.id!=='name' && el.id!=='email') el.disabled=true;
-                });
-                document.querySelector('.save-btn').style.display='none';
-                document.querySelector('.edit-btn').style.display='inline-block';
-                alert("Profile updated!");
-            } else alert("Error updating profile");
-        } catch(err){ console.error(err); alert("Something went wrong"); }
-    });
+                const p = await res.json();
+
+                document.getElementById("name").value = p.name || "";
+                document.getElementById("email").value = p.email || "";
+                document.getElementById("contact").value = p.contact || "";
+                document.getElementById("permanent").value = p.permanent_address || "";
+                document.getElementById("residential").value = p.residential_address || "";
+                document.getElementById("landmark").value = p.landmark || "";
+                document.getElementById("pin_code").value = p.pin_code || "";
+
+                loading.style.display="none";
+                document.getElementById("profileContainer").style.display="block";
+            }
+        } catch(e){ console.log(e); }
+    }
 
     loadProfile();
 </script>
+
 </body>
 </html>
