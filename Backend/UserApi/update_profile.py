@@ -15,16 +15,16 @@ class ProfileUpdate(MethodView):
 
     @jwt_required(locations=['headers'])
     @checkRole('user')
-    # @blp.arguments(UserUpdateProfileSchema)
+    @blp.arguments(UserUpdateProfileSchema)
     def put(self, data):
-        print(data)
         claims = get_jwt()
         email = claims['sub']
-
+        contact = data['contact']
         permanent_address = data['permanent_address']
         residential_address = data['residential_address']
         landmark = data['landmark']
         pin_code = data['pin_code']
 
-        result = self.profile_db.update_profile(email, permanent_address, residential_address, landmark, pin_code)
-        return result, 200
+        result = self.profile_db.update_profile(email, contact, permanent_address, residential_address, landmark,
+                                                pin_code)
+        return result

@@ -2,6 +2,8 @@ from marshmallow import Schema, fields
 
 
 class UserUpdateProfileSchema(Schema):
+    contact = fields.String(required=False,
+                            metadata={'description': "enter your contact here..."})
     permanent_address = fields.String(required=False, metadata={'description': "enter your permanent-address here..."})
     residential_address = fields.String(required=False,
                                         metadata={'description': "enter your residential-address here..."})

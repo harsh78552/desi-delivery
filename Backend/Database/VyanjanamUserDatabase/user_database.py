@@ -34,18 +34,27 @@ class UserDatabase:
         except Exception as error:
             return str(error), 500
 
-    def update_profile(self, emails, permanent_address, residential_address, landmark, pin_code
+    def update_profile(self, email, contact, permanent_address, residential_address, landmark, pin_code
                        ):
+        user_data = self.collection.find_one({'email': email})
+        if not user_data:
+            return {'message': 'user not found..'}, 404
+        updated_fields = {}
+        if user_data.get('contact') != contact:
+            updated_fields['contact'] = contact
+        if user_data.get("permanent_address") != permanent_address:
+            updated_fields["permanent_address"] = permanent_address
+        if user_data["residential_address"] != residential_address:
+            updated_fields["residential_address"] = residential_address
+        if user_data["landmark"] != landmark:
+            updated_fields["landmark"] = landmark
+        if user_data["pin_code"] != pin_code:
+            updated_fields["pin_code"] = pin_code
+        if not updated_fields:
+            return {'message': 'no update found...'}
         try:
-            updated = self.collection.update_one({'email': emails}, {'$set': {
-                'permanent_address': 'permanent_address',
-                'residential_address': 'residential_address',
-                'landmark': 'landmark',
-                'pin_code': 'pin_code',
-            }})
-            if updated.modified_count > 0:
-                return {"message": 'profile updated successfully'}
-            else:
-                return {'message': 'no changes found.'}
+            updated_result = self.collection.update_one({'email': email}, {'$set': updated_fields})
+            if updated_result.modified_count > 0:
+                return {'message': "profile updated successfully.."}, 200
         except Exception as error:
-            return str(error)
+            return {'message': 'error', "details": str(error)}
