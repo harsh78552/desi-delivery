@@ -10,4 +10,4 @@ class UserOrderFoodSchema(Schema):
     food_category = fields.String(required=True, metadata={'description': 'enter food-category ..'})
     food_name = fields.String(required=True, metadata={'description': 'enter your food-name..'})
     quantity = fields.Integer(required=True, metadata={'description': 'enter quantity no..'})
-    price = fields.String(required=True, metadata={'description': 'enter food-item price..'})
+    price = fields.Integer(required=True, metadata={'description': 'enter food-item price..'})
