@@ -17,4 +17,5 @@ class GetAllOrderedData(MethodView):
     def post(self):
         claims = get_jwt()
         order_summary = self.get_all_ordered_data.get_all_ordered_food_data(claims['sub'])
-        return order_summary, 200
+        print(order_summary)
+        return order_summary
