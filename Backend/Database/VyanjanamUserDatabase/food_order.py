@@ -10,18 +10,20 @@ class OrderDatabase:
         self.db = self.client['FoodOrderingSystem']
         self.collection = self.db['food-ordered']
 
-    def ordered_food_data(self, email, name, image_url, food_id, item, quantity, total_price, delivery_address):
+    def ordered_food_data(self, email, name, contact, pin_code, delivery_address, food_category, food_name, quantity,
+                          price):
         now_ = datetime.now().date()
         as_datetime = datetime.combine(now_, datetime.min.time())
         ordered_summary = {
-            'item_image': image_url,
             'name': name,
-            'food_id': food_id,
-            'item': item,
+            'contact': contact,
+            'pin_code': pin_code,
+            'delivery_address': delivery_address,
+            'food_category': food_category,
+            'food_name': food_name,
             'quantity': quantity,
-            'total_price': total_price,
+            'price': price,
             'date': as_datetime,
-            'delivery_address': delivery_address
 
         }
         try:
@@ -33,9 +35,9 @@ class OrderDatabase:
 
             # Check if a new document was created
             if result.upserted_id:
-                message = f'Your {item} is successfully ordered. New user record created.'
+                message = f'Your {food_name} is successfully ordered.'
             else:
-                message = f'Your {item} is successfully ordered. Next step updated soon.'
+                message = f'Your {food_name} is successfully ordered. Next step updated soon.'
 
             return {'message': message, 'result': 'success'}, 200
         except Exception as error:
@@ -46,7 +48,7 @@ class OrderDatabase:
             result = self.collection.find_one({'email': email})
             result['_id'] = str(result.get("_id"))
             return result
-        result = self.collection.find().sort('date',-1)
+        result = self.collection.find().sort('date', -1)
         list_ = []
         for data in result:
             data['_id'] = str(data['_id'])

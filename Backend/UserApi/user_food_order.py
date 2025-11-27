@@ -15,9 +15,15 @@ class FoodOrder(MethodView):
     @jwt_required(locations=['headers'])
     @blp.arguments(UserOrderFoodSchema)
     def post(self, data):
-        claims = get_jwt()
-        print(data)
-        # result = self.food_order_db.ordered_food_data(claims['sub'], data['user_name'],
-        #                                               data['food_id'], data['food_name'],
-        #                                               data['quantity'], data['price'], data['delivery_address'])
-        # return result
+        name = data['user_name']
+        email = data['user_email']
+        contact = data['user_contact']
+        pin_code = data['pin_code']
+        delivery_address = data['delivery_address']
+        food_category = data['food_category']
+        food_name = data['food_name']
+        quantity = data['quantity']
+        price = data['price']
+        result = self.food_order_db.ordered_food_data(name, email, contact, pin_code, delivery_address, food_category,
+                                                      food_name, quantity, price)
+        return result
