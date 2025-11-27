@@ -4,7 +4,6 @@ from marshmallow import Schema, fields
 class OrderSchema(Schema):
     date = fields.DateTime()
     delivery_address = fields.String()
-    food_id = fields.String()
     item = fields.String()
     name = fields.String()
     quantity = fields.String()

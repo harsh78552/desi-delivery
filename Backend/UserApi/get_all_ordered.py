@@ -13,7 +13,7 @@ class GetAllOrderedData(MethodView):
         self.get_all_ordered_data = OrderDatabase()
 
     @jwt_required(locations=['headers'])
-    @blp.response(200, UserOrderSchema)
+    # @blp.response(200, UserOrderSchema)
     def post(self):
         claims = get_jwt()
         order_summary = self.get_all_ordered_data.get_all_ordered_food_data(claims['sub'])
