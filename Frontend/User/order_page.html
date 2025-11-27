@@ -68,27 +68,25 @@
 
 <script>
     // Load data from localStorage
-    document.getElementById("food-category").value = localStorage.getItem("orderCategory");
-    document.getElementById("food-name").value = localStorage.getItem("orderItem");
-    document.getElementById("food-qty").value = localStorage.getItem("orderQty");
-
-    const total = parseInt(localStorage.getItem("orderQty")) * parseInt(localStorage.getItem("orderPrice"));
-    document.getElementById("food-total").value = "₹" + total;
-
+    const qty = parseInt(localStorage.getItem("orderQty"));
+    const price = parseInt(localStorage.getItem("orderPrice"));
+    const total = qty * price;
 
     // SUBMIT ORDER
     document.getElementById("submit-order").addEventListener("submit", async function(e){
         e.preventDefault();
 
         const orderData = {
-            name: document.getElementById("user-name").value,
-            email: document.getElementById("user-email").value,
-            contact: document.getElementById("user-contact").value,
-            address: document.getElementById("user-address").value,
-            pin: document.getElementById("user-pin").value,
+            user_name: document.getElementById("user-name").value,
+            user_email: document.getElementById("user-email").value,
+            user_contact: document.getElementById("user-contact").value,
+            delivery_address: document.getElementById("user-address").value,
+            pin_code: document.getElementById("user-pin").value,
+
             food_category: localStorage.getItem("orderCategory"),
             food_name: localStorage.getItem("orderItem"),
-            qty: parseInt(localStorage.getItem("orderQty"))  // MUST BE INTEGER
+            quantity: qty,
+            price: total
         };
 
         const token = localStorage.getItem("userToken");
