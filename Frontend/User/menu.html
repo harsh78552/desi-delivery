@@ -160,12 +160,9 @@
 
     <div class="nav-right">
 
-        <!-- 🛒 Cart -->
         <div id="cart-area"
              style="cursor:pointer; display:flex; align-items:center; gap:6px;"
-             onclick="openCartWithRefresh()">
-
-            🛒 Cart
+             onclick="openCartWithRefresh()">Cart
             <span id="cart-count"
                   style="background:#28a745; padding:4px 10px; border-radius:50%; font-size:14px;">
                 0
@@ -303,7 +300,6 @@
         }
     }
 
-    /* 🔔 TOAST */
     function showToast(message, type="info") {
         const toast = document.createElement("div");
         toast.className = `toast ${type}`;
