@@ -23,4 +23,5 @@ class AddItemToCart(MethodView):
         food_name = data['food_name']
         image_url = data['image_url']
         result = self.cart_database.add_to_cart(email, food_category, food_name, image_url)
+        print(result)
         return result
