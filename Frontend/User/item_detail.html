@@ -271,7 +271,7 @@
             });
 
             let result = {};
-            try { result = await res.json(); } catch { result.total_count = 0; }
+            try { result = await res.json(); } catch { result.item_count = 0; }
 
             if (res.ok) {
                 showToast("Item added to cart!");
