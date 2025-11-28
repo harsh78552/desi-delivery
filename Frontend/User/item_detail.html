@@ -1,146 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
-<title>Food Detail</title>
-<style>
-    body {
-        margin: 0;
-        padding: 20px;
-        font-family: 'Segoe UI', sans-serif;
-        background: #f2f2f2;
-    }
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+    <title>Food Detail</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', sans-serif;
+            background: #f2f2f2;
+        }
 
-    /* NAVBAR */
-    .navbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #232f3e;
-        color: white;
-        padding: 12px 20px;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
+        /* NAVBAR */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #232f3e;
+            color: white;
+            padding: 12px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
 
-    .navbar button {
-        background: #ff5722;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-    }
+        .navbar button {
+            background: #ff5722;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
 
-    .cart-count {
-        background: #28a745;
-        color: white;
-        border-radius: 50%;
-        padding: 4px 10px;
-        margin-left: 8px;
-        font-size: 14px;
-    }
+        .cart-count {
+            background: #28a745;
+            color: white;
+            border-radius: 50%;
+            padding: 4px 10px;
+            margin-left: 8px;
+            font-size: 14px;
+        }
 
-    .card {
-        background: white;
-        padding: 20px;
-        max-width: 500px;
-        margin: auto;
-        border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        text-align: center;
-    }
+        /* CARD */
+        .card {
+            background: white;
+            padding: 20px;
+            max-width: 500px;
+            margin: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            text-align: center;
+        }
 
-    img {
-        width: 100%;
-        height: 260px;
-        object-fit: cover;
-        border-radius: 12px;
-    }
+        img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
 
-    .qty-box {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 18px;
-        margin: 15px 0;
-    }
+        .qty-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            margin: 15px 0;
+        }
 
-    .qty-btn {
-        padding: 8px 16px;
-        border: none;
-        background: #ffd29f;
-        cursor: pointer;
-        border-radius: 8px;
-        font-size: 20px;
-        font-weight: bold;
-    }
+        .qty-btn {
+            padding: 8px 16px;
+            border: none;
+            background: #ffd29f;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+        }
 
-    .order-btn {
-        background: #ff5722;
-        color: white;
-        width: 100%;
-        padding: 12px;
-        margin-top: 10px;
-        border-radius: 8px;
-        font-size: 17px;
-        border: none;
-        cursor: pointer;
-    }
+        .order-btn {
+            background: #ff5722;
+            color: white;
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 8px;
+            font-size: 17px;
+            border: none;
+            cursor: pointer;
+        }
 
-    .cart-btn {
-        background: #28a745;
-        color: white;
-        width: 100%;
-        padding: 12px;
-        border-radius: 8px;
-        font-size: 17px;
-        border: none;
-        cursor: pointer;
-        margin-top: 10px;
-    }
+        .cart-btn {
+            background: #28a745;
+            color: white;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 17px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
 
-    /* Toast Notification */
-    #toast {
-        visibility: hidden;
-        min-width: 200px;
-        background: #333;
-        color: #fff;
-        text-align: center;
-        border-radius: 6px;
-        padding: 12px 20px;
-        position: fixed;
-        left: 50%;
-        bottom: 30px;
-        transform: translateX(-50%);
-        font-size: 16px;
-        z-index: 10000;
-        opacity: 0;
-        transition: opacity 0.4s, bottom 0.4s;
-    }
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 200px;
+            background: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 12px 20px;
+            position: fixed;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 16px;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.4s, bottom 0.4s;
+        }
 
-    #toast.show {
-        visibility: visible;
-        opacity: 1;
-        bottom: 50px;
-    }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
 
-    /* Animate cart count */
-    .cart-count.animate {
-        animation: bounce 0.3s ease;
-    }
+        /* Animate cart count */
+        .cart-count.animate {
+            animation: bounce 0.3s ease;
+        }
 
-    @keyframes bounce {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.4); }
-        100% { transform: scale(1); }
-    }
-</style>
+        @keyframes bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+    </style>
 </head>
 <body>
 
@@ -165,6 +166,7 @@
         window.location.href = "user_login.html";
     }
 
+    // Token validation
     if (token) {
         try {
             const parts = token.split(".");
@@ -182,6 +184,7 @@
         redirectToLogin();
     }
 
+    // Toast message
     function showToast(message, type="success") {
         const toast = document.getElementById("toast");
         toast.innerHTML = message;
@@ -190,21 +193,7 @@
         setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2500);
     }
 
-    async function loadCartCount() {
-        try {
-            const res = await fetch("https://desi-delivery.onrender.com/cart-count", {
-                method: "GET",
-                headers: { "Authorization": "Bearer " + token }
-            });
-            const data = await res.json();
-            if (res.ok) {
-                updateCartCount(data.total_count || 0);
-            }
-        } catch (err) {
-            console.error("Cart count error:", err);
-        }
-    }
-
+    // Update cart count
     function updateCartCount(count) {
         const cartSpan = document.getElementById("cart-count");
         cartSpan.innerText = count;
@@ -212,6 +201,7 @@
         setTimeout(() => cartSpan.classList.remove("animate"), 300);
     }
 
+    // Load food details
     async function loadFoodDetail() {
         const category = localStorage.getItem("selectedCategory");
         const itemName = localStorage.getItem("selectedItemName");
@@ -251,15 +241,21 @@
         }
     }
 
+    // Change quantity
+    function changeQty(value) {
+        let qty = parseInt(document.getElementById("qty").innerText);
+        qty += value;
+        if (qty < 1) qty = 1;
+        document.getElementById("qty").innerText = qty;
+    }
 
+    // Add item to cart
     async function addToCart() {
-        const qty = parseInt(document.getElementById("qty").innerText);
-
         const cartData = {
             food_category: currentItem.sub_category,
             food_name: currentItem.food_name,
             image_url: currentItem.image_url,
-            quantity: qty
+
         };
 
         try {
@@ -272,12 +268,11 @@
                 body: JSON.stringify(cartData)
             });
 
-            let result = {};
-            try { result = await res.json(); } catch { result.item_count = 0; }
+            const result = await res.json();
 
             if (res.ok) {
                 showToast(result.message || "Item added to cart!");
-                updateCartCount(result.item_count || 0);
+                updateCartCount(result.item_count || 0); // Use item_count from API
             } else {
                 showToast(result.message || "Failed to add item", "error");
             }
@@ -288,7 +283,7 @@
         }
     }
 
-
+    // Open order page
     function openOrderForm() {
         const qty = document.getElementById("qty").innerText;
         localStorage.setItem("orderCategory", currentItem.sub_category);
@@ -299,7 +294,6 @@
     }
 
     // Initialize
-    loadCartCount();
     loadFoodDetail();
 </script>
 </body>
