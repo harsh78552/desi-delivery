@@ -124,6 +124,7 @@
             orders.order_summary.forEach(o => {
                 const box = document.createElement("div");
                 box.className = "order-box";
+                console.log(o)
 
                 box.innerHTML = `
                     <h3>${o.food_name || "Food Name Not Available"}</h3>
