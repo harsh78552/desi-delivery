@@ -277,10 +277,41 @@
         document.getElementById("qty").innerText = qty;
     }
 
-    function addToCart() {
-        const qty = parseInt(document.getElementById("qty").innerText);
-        alert("Added to cart - Qty: " + qty);
+    async function addToCart() {
+      const qty = parseInt(document.getElementById("qty").innerText);
+
+      const cartData = {
+            food_category: currentItem.sub_category,
+            food_name: currentItem.food_name,
+            image_url: currentItem.image_url,
+            quantity: qty
+      };
+
+      try {
+            const res = await fetch("https://desi-delivery.onrender.com/item-add-to-cart", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify(cartData)
+            });
+
+            const result = await res.json();
+            console.log(result)
+
+            if (res.ok) {
+                alert("Item added to cart!");
+            } else {
+                alert("Failed: " + result.message);
+            }
+
+      } catch (err) {
+            console.error(err);
+            alert("Something went wrong!");
+      }
     }
+
 
 
     function openOrderForm() {

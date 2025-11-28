@@ -4,6 +4,7 @@ from flask_jwt_extended import JWTManager, unset_jwt_cookies
 from flask_mail import Mail
 from flask_smorest import Api
 
+from UserApi.add_to_cart import blp as UserAddItemBlueprint
 from UserApi.get_all_ordered import blp as UserAllOrderedFood
 from UserApi.get_food_data import blp as GetFoodItemBlueprint
 from UserApi.update_profile import blp as ProfileUpdateBlueprint
@@ -76,6 +77,7 @@ api.register_blueprint(UserLoginBlueprint)
 api.register_blueprint(UserProfileBlueprint)
 api.register_blueprint(ProfileUpdateBlueprint)
 api.register_blueprint(UserOrderFoodBlueprint)
+api.register_blueprint(UserAddItemBlueprint)
 api.register_blueprint(UserAllOrderedFood)
 api.register_blueprint(AdminLoginBlueprint)
 api.register_blueprint(AdminLogoutBlueprint)
@@ -103,4 +105,3 @@ def health_check():
 
 if __name__ == "__main__":
     app.run()
-

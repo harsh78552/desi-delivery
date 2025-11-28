@@ -15,7 +15,6 @@ class OrderDatabase:
         now_ = datetime.now().date()
         as_datetime = datetime.combine(now_, datetime.min.time())
         ordered_summary = {
-            'email': email,
             'name': name,
             'contact': contact,
             'pin_code': pin_code,
@@ -25,7 +24,6 @@ class OrderDatabase:
             'quantity': quantity,
             'price': price,
             'date': as_datetime,
-
         }
         try:
             result = self.collection.update_one(
