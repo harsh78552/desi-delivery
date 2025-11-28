@@ -5,43 +5,46 @@
     <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
     <title>Food Detail</title>
 
-    <script>
-        const token = localStorage.getItem("userToken");
-
-        function redirectToLogin() {
-            localStorage.removeItem("userToken");
-            window.location.href = "user_login.html";
-        }
-
-        if (token) {
-            try {
-                const parts = token.split(".");
-                if (parts.length !== 3) throw new Error("Invalid token format");
-
-                const payload = JSON.parse(atob(parts[1]));
-                const expiry = payload.exp;
-                const role = payload.role;
-                const now = Math.floor(Date.now() / 1000);
-
-                if (now > expiry || role !== "user") {
-                    redirectToLogin();
-                }
-            } catch (err) {
-                console.error("Token Error:", err);
-                redirectToLogin();
-            }
-        } else {
-            redirectToLogin();
-        }
-    </script>
-
     <style>
-
         body {
             margin: 0;
             padding: 20px;
             font-family: 'Segoe UI', sans-serif;
             background: #f2f2f2;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #232f3e;
+            color: white;
+            padding: 12px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .navbar button {
+            background: #ff5722;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cart-count {
+            background: #28a745;
+            color: white;
+            border-radius: 50%;
+            padding: 4px 10px;
+            margin-left: 8px;
+            font-size: 14px;
         }
 
         .card {
@@ -103,79 +106,6 @@
             margin-top: 10px;
         }
 
-        /* POPUP FIXED + SCROLLABLE */
-
-        .popup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: none;
-            justify-content: center;
-            background: rgba(0,0,0,0.55);
-            backdrop-filter: blur(3px);
-            padding: 20px;
-            overflow-y: auto;
-            z-index: 999;
-        }
-
-        .popup-content {
-            background: #fff;
-            width: 360px;
-            max-height: 95%;
-            overflow-y: auto;
-            padding: 20px;
-            margin: auto;
-            border-radius: 12px;
-            animation: fadeIn 0.3s ease-out;
-            box-shadow: 0 6px 25px rgba(0,0,0,0.25);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.92); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .popup-content input,
-        .popup-content textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 6px 0 14px;
-            font-size: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-        }
-
-        .popup-content input:focus,
-        .popup-content textarea:focus {
-            border-color: #ff5722;
-        }
-
-        .submit-btn {
-            background: #ff5722;
-            color: white;
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .close-btn {
-            margin-top: 10px;
-            width: 100%;
-            padding: 12px;
-            background: #c62828;
-            color: white;
-            border: none;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
         /* Toast Notification */
         #toast {
             visibility: hidden;
@@ -200,10 +130,17 @@
             opacity: 1;
             bottom: 50px;
         }
-
     </style>
 </head>
 <body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <button onclick="window.history.back()">Back</button>
+    <div>
+        Cart <span id="cart-count" class="cart-count">0</span>
+    </div>
+</div>
 
 <div id="food-detail">Loading...</div>
 
@@ -211,23 +148,49 @@
 <div id="toast"></div>
 
 <script>
+    const token = localStorage.getItem("userToken");
+
+    function redirectToLogin() {
+        localStorage.removeItem("userToken");
+        window.location.href = "user_login.html";
+    }
+
+    if (token) {
+        try {
+            const parts = token.split(".");
+            if (parts.length !== 3) throw new Error("Invalid token format");
+            const payload = JSON.parse(atob(parts[1]));
+            const expiry = payload.exp;
+            const role = payload.role;
+            const now = Math.floor(Date.now() / 1000);
+            if (now > expiry || role !== "user") redirectToLogin();
+        } catch (err) {
+            console.error("Token Error:", err);
+            redirectToLogin();
+        }
+    } else {
+        redirectToLogin();
+    }
 
     function showToast(message, type="success") {
         const toast = document.getElementById("toast");
-
         toast.innerHTML = message;
-
-        if (type === "error") {
-            toast.style.background = "#e63946";
-        } else {
-            toast.style.background = "#28a745";
-        }
-
+        toast.style.background = (type === "error") ? "#e63946" : "#28a745";
         toast.className = "show";
+        setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2500);
+    }
 
-        setTimeout(() => {
-            toast.className = toast.className.replace("show", "");
-        }, 2500);
+    async function loadCartCount() {
+        try {
+            const res = await fetch("https://desi-delivery.onrender.com/cart-count", {
+                method: "GET",
+                headers: { "Authorization": "Bearer " + token }
+            });
+            const data = await res.json();
+            if (res.ok) document.getElementById("cart-count").innerText = data.total_count || 0;
+        } catch (err) {
+            console.error("Cart count error:", err);
+        }
     }
 
     async function loadFoodDetail() {
@@ -235,20 +198,15 @@
         const itemName = localStorage.getItem("selectedItemName");
 
         if (!category || !itemName) {
-            document.getElementById("food-detail").innerHTML =
-                "<b>No item selected.</b>";
+            document.getElementById("food-detail").innerHTML = "<b>No item selected.</b>";
             return;
         }
 
         try {
             const res = await fetch(
                 `https://desi-delivery.onrender.com/menu/item?category=${category}&item_name=${itemName}`,
-                {
-                    method: "GET",
-                    headers: { "Authorization": "Bearer " + token }
-                }
+                { headers: { "Authorization": "Bearer " + token } }
             );
-
             const item = await res.json();
             window.currentItem = item;
 
@@ -269,10 +227,8 @@
                     <button class="order-btn" onclick="openOrderForm()">Order Now</button>
                 </div>
             `;
-        }
-        catch (err) {
-            document.getElementById("food-detail").innerHTML =
-                "<b>Error loading item.</b>";
+        } catch (err) {
+            document.getElementById("food-detail").innerHTML = "<b>Error loading item.</b>";
         }
     }
 
@@ -284,10 +240,12 @@
     }
 
     async function addToCart() {
+        const qty = parseInt(document.getElementById("qty").innerText);
         const cartData = {
             food_category: currentItem.sub_category,
             food_name: currentItem.food_name,
             image_url: currentItem.image_url,
+            quantity: qty
         };
 
         try {
@@ -304,6 +262,7 @@
 
             if (res.ok) {
                 showToast("Item added to cart!");
+                document.getElementById("cart-count").innerText = result.total_count || 0;
             } else {
                 showToast(result.message || "Failed to add item", "error");
             }
@@ -316,15 +275,14 @@
 
     function openOrderForm() {
         const qty = document.getElementById("qty").innerText;
-
         localStorage.setItem("orderCategory", currentItem.sub_category);
         localStorage.setItem("orderItem", currentItem.food_name);
         localStorage.setItem("orderQty", qty);
         localStorage.setItem("orderPrice", currentItem.price);
-
         window.location.href = "order_page.html";
     }
 
+    loadCartCount();
     loadFoodDetail();
 
 </script>

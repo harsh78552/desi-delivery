@@ -18,7 +18,6 @@ class AddItemToCart(MethodView):
     @blp.arguments(AddToCartSchema)
     def post(self, data):
         credential = get_jwt()
-        print(data)
         email = credential['sub']
         food_category = data['food_category']
         food_name = data['food_name']

@@ -17,6 +17,15 @@ class AddToCartDatabase:
         }
         try:
             self.collection.insert_one(items)
-            return {'message': 'item add in cart successfully..'}
+            total = self.collection.count_documents({'email': email})
+            return {'message': 'item add in cart successfully..', 'item_count': total}
         except Exception as error:
             return {'message': str(error)}
+
+    def get_add_to_all_cart_item(self, email):
+        all_add_to_cart_item_list = []
+        items = self.collection.find({'email': email})
+        for item in items:
+            item['_id'] = str(item['_id'])
+            all_add_to_cart_item_list.append(item)
+        return all_add_to_cart_item_list
