@@ -240,12 +240,10 @@
     }
 
     async function addToCart() {
-        const qty = parseInt(document.getElementById("qty").innerText);
         const cartData = {
             food_category: currentItem.sub_category,
             food_name: currentItem.food_name,
             image_url: currentItem.image_url,
-            quantity: qty
         };
 
         try {
