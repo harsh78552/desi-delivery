@@ -165,35 +165,31 @@
         localStorage.removeItem("userToken");
         window.location.href = "user_login.html";
     }
-
-    // Token validation
     if (token) {
         try {
             const parts = token.split(".");
             if (parts.length !== 3) throw new Error("Invalid token format");
             const payload = JSON.parse(atob(parts[1]));
-            const expiry = payload.exp;
-            const role = payload.role;
             const now = Math.floor(Date.now() / 1000);
-            if (now > expiry || role !== "user") redirectToLogin();
+
+            if (now > payload.exp || payload.role !== "user") {
+                redirectToLogin();
+            }
         } catch (err) {
-            console.error("Token Error:", err);
             redirectToLogin();
         }
     } else {
         redirectToLogin();
     }
 
-    // Toast message
-    function showToast(message, type="success") {
+    function showToast(message, type = "success") {
         const toast = document.getElementById("toast");
         toast.innerHTML = message;
-        toast.style.background = (type === "error") ? "#e63946" : "#28a745";
+        toast.style.background = type === "error" ? "#e63946" : "#28a745";
         toast.className = "show";
-        setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2500);
+        setTimeout(() => toast.classList.remove("show"), 2500);
     }
 
-    // Update cart count
     function updateCartCount(count) {
         const cartSpan = document.getElementById("cart-count");
         cartSpan.innerText = count;
@@ -201,7 +197,25 @@
         setTimeout(() => cartSpan.classList.remove("animate"), 300);
     }
 
-    // Load food details
+    async function loadCartCount() {
+        try {
+            const res = await fetch("https://desi-delivery.onrender.com/fetch-total-item-add-in-cart", {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                updateCartCount(data.item_count || 0);
+            }
+        } catch (err) {
+            console.log("Cart fetch failed:", err);
+        }
+    }
+
     async function loadFoodDetail() {
         const category = localStorage.getItem("selectedCategory");
         const itemName = localStorage.getItem("selectedItemName");
@@ -216,6 +230,7 @@
                 `https://desi-delivery.onrender.com/menu/item?category=${category}&item_name=${itemName}`,
                 { headers: { "Authorization": "Bearer " + token } }
             );
+
             const item = await res.json();
             window.currentItem = item;
 
@@ -227,7 +242,7 @@
                     <h3>₹${item.price}</h3>
 
                     <div class="qty-box">
-                        <button class="qty-btn" onclick="changeQty(-1)">-</button>
+                        <button class="qty-btn" onclick="changeQty(-1)">−</button>
                         <span id="qty" style="font-size:18px;">1</span>
                         <button class="qty-btn" onclick="changeQty(1)">+</button>
                     </div>
@@ -241,21 +256,17 @@
         }
     }
 
-    // Change quantity
-    function changeQty(value) {
-        let qty = parseInt(document.getElementById("qty").innerText);
-        qty += value;
-        if (qty < 1) qty = 1;
-        document.getElementById("qty").innerText = qty;
-    }
+<!--    function changeQty(value) {-->
+<!--        let qty = parseInt(document.getElementById("qty").innerText);-->
+<!--        qty = Math.max(1, qty + value);-->
+<!--        document.getElementById("qty").innerText = qty;-->
+<!--    }-->
 
-    // Add item to cart
     async function addToCart() {
         const cartData = {
             food_category: currentItem.sub_category,
             food_name: currentItem.food_name,
-            image_url: currentItem.image_url,
-
+            image_url: currentItem.image_url
         };
 
         try {
@@ -272,29 +283,29 @@
 
             if (res.ok) {
                 showToast(result.message || "Item added to cart!");
-                updateCartCount(result.item_count || 0); // Use item_count from API
+                updateCartCount(result.item_count || 0);
             } else {
-                showToast(result.message || "Failed to add item", "error");
+                showToast(result.message, "error");
             }
-
-        } catch (err) {
-            console.error(err);
+        } catch {
             showToast("Something went wrong!", "error");
         }
     }
 
-    // Open order page
     function openOrderForm() {
         const qty = document.getElementById("qty").innerText;
+
         localStorage.setItem("orderCategory", currentItem.sub_category);
         localStorage.setItem("orderItem", currentItem.food_name);
         localStorage.setItem("orderQty", qty);
         localStorage.setItem("orderPrice", currentItem.price);
+
         window.location.href = "order_page.html";
     }
 
-    // Initialize
+    loadCartCount();     // <--- NEW
     loadFoodDetail();
+
 </script>
 </body>
 </html>

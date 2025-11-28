@@ -29,3 +29,7 @@ class AddToCartDatabase:
             item['_id'] = str(item['_id'])
             all_add_to_cart_item_list.append(item)
         return all_add_to_cart_item_list
+
+    def total_item_add_in_cart(self, email):
+        total = self.collection.count_documents({'email': email})
+        return {'item_count': total}

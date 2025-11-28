@@ -19,5 +19,4 @@ class FetchAllItemAddInCart(MethodView):
         credential = get_jwt()
         email = credential['sub']
         result = self.all_item_db.get_add_to_all_cart_item(email)
-        # print(result)
         return result
