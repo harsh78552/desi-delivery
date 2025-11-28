@@ -4,33 +4,34 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
     <title>Food Detail</title>
+
     <script>
         const token = localStorage.getItem("userToken");
 
         function redirectToLogin() {
-          localStorage.removeItem("userToken");
-          window.location.href = "user_login.html";
+            localStorage.removeItem("userToken");
+            window.location.href = "user_login.html";
         }
 
         if (token) {
-          try {
-            const parts = token.split(".");
-            if (parts.length !== 3) throw new Error("Invalid token format");
+            try {
+                const parts = token.split(".");
+                if (parts.length !== 3) throw new Error("Invalid token format");
 
-            const payload = JSON.parse(atob(parts[1]));
-            const expiry = payload.exp;
-            const role = payload.role;
-            const now = Math.floor(Date.now() / 1000);
+                const payload = JSON.parse(atob(parts[1]));
+                const expiry = payload.exp;
+                const role = payload.role;
+                const now = Math.floor(Date.now() / 1000);
 
-            if (now > expiry || role !== "user") {
-              redirectToLogin();
+                if (now > expiry || role !== "user") {
+                    redirectToLogin();
+                }
+            } catch (err) {
+                console.error("Token Error:", err);
+                redirectToLogin();
             }
-          } catch (err) {
-            console.error("Token Error:", err);
-            redirectToLogin();
-          }
         } else {
-          redirectToLogin();
+            redirectToLogin();
         }
     </script>
 
@@ -175,59 +176,64 @@
             cursor: pointer;
         }
 
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 200px;
+            background: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 12px 20px;
+            position: fixed;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 16px;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.4s, bottom 0.4s;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
     </style>
 </head>
 <body>
 
 <div id="food-detail">Loading...</div>
 
-
-<!-- SCROLLABLE ORDER POPUP -->
-<div id="order-popup" class="popup">
-    <div class="popup-content">
-        <h2 style="text-align:center; color:#ff5722; margin-top:5px;">Place Your Order</h2>
-        <form id="order-form">
-
-            <label>Name:</label>
-            <input type="text" id="user-name" placeholder="Enter your name" required>
-
-            <label>Email:</label>
-            <input type="email" id="user-email" placeholder="Enter your email" required>
-
-            <label>Contact Number:</label>
-            <input type="text" id="user-contact" placeholder="Enter contact number" required>
-
-            <label>Address:</label>
-            <textarea id="user-address" placeholder="Your full address" required></textarea>
-
-            <label>PIN Code:</label>
-            <input type="text" id="user-pin" placeholder="6-digit PIN" required>
-
-            <label>State:</label>
-            <input type="text" id="user-state" placeholder="State name" required>
-
-            <label>Food Category:</label>
-            <input type="text" id="food-category" readonly>
-
-            <label>Food Item:</label>
-            <input type="text" id="food-name" readonly>
-
-            <label>Quantity:</label>
-            <input type="number" id="food-qty" min="1">
-
-            <button type="submit" class="submit-btn">Submit Order</button>
-            <button type="button" onclick="closePopup()" class="close-btn">Cancel</button>
-
-        </form>
-    </div>
-</div>
-
+<!-- TOAST BOX -->
+<div id="toast"></div>
 
 <script>
+
+    function showToast(message, type="success") {
+        const toast = document.getElementById("toast");
+
+        toast.innerHTML = message;
+
+        if (type === "error") {
+            toast.style.background = "#e63946";
+        } else {
+            toast.style.background = "#28a745";
+        }
+
+        toast.className = "show";
+
+        setTimeout(() => {
+            toast.className = toast.className.replace("show", "");
+        }, 2500);
+    }
 
     async function loadFoodDetail() {
         const category = localStorage.getItem("selectedCategory");
         const itemName = localStorage.getItem("selectedItemName");
+
         if (!category || !itemName) {
             document.getElementById("food-detail").innerHTML =
                 "<b>No item selected.</b>";
@@ -278,13 +284,13 @@
     }
 
     async function addToCart() {
-      const cartData = {
+        const cartData = {
             food_category: currentItem.sub_category,
             food_name: currentItem.food_name,
             image_url: currentItem.image_url,
-      };
+        };
 
-      try {
+        try {
             const res = await fetch("https://desi-delivery.onrender.com/item-add-to-cart", {
                 method: "POST",
                 headers: {
@@ -296,44 +302,28 @@
 
             const result = await res.json();
 
-
             if (res.ok) {
-                alert("Item added to cart!");
+                showToast("Item added to cart!");
             } else {
-                alert("Failed: " + result.message);
+                showToast(result.message || "Failed to add item", "error");
             }
 
-      } catch (err) {
+        } catch (err) {
             console.error(err);
-            alert("Something went wrong!");
-      }
+            showToast("Something went wrong!", "error");
+        }
     }
-
-
 
     function openOrderForm() {
-    const qty = document.getElementById("qty").innerText;
+        const qty = document.getElementById("qty").innerText;
 
-    localStorage.setItem("orderCategory", currentItem.sub_category);
-    localStorage.setItem("orderItem", currentItem.food_name);
-    localStorage.setItem("orderQty", qty);
-    localStorage.setItem("orderPrice", currentItem.price);
+        localStorage.setItem("orderCategory", currentItem.sub_category);
+        localStorage.setItem("orderItem", currentItem.food_name);
+        localStorage.setItem("orderQty", qty);
+        localStorage.setItem("orderPrice", currentItem.price);
 
-    window.location.href = "order_page.html";   // new page
-}
-
-
-    function closePopup() {
-        document.getElementById("order-popup").style.display = "none";
+        window.location.href = "order_page.html";
     }
-
-    document.getElementById("order-form").addEventListener("submit", function(e){
-        e.preventDefault();
-
-        alert("Order submitted successfully!");
-
-        closePopup();
-    });
 
     loadFoodDetail();
 
