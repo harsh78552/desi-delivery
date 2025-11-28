@@ -7,24 +7,26 @@
     <style>
         body {
             margin: 0;
-            padding: 20px;
+            padding: 80px 20px 20px;
             font-family: 'Segoe UI', sans-serif;
-            background: #f2f2f2;
+            background: #f7f7f7;
         }
 
-        /* NAVBAR */
+        /* FIXED NAVBAR */
         .navbar {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #232f3e;
+            color: white;
+            padding: 14px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #232f3e;
-            color: white;
-            padding: 12px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         .navbar button {
@@ -39,11 +41,10 @@
 
         .cart-count {
             background: #28a745;
-            color: white;
-            border-radius: 50%;
             padding: 4px 10px;
-            margin-left: 8px;
+            border-radius: 50%;
             font-size: 14px;
+            margin-left: 6px;
         }
 
         /* CARD */
@@ -53,7 +54,7 @@
             max-width: 500px;
             margin: auto;
             border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             text-align: center;
         }
 
@@ -73,9 +74,9 @@
         }
 
         .qty-btn {
-            padding: 8px 16px;
+            padding: 10px 16px;
             border: none;
-            background: #ffd29f;
+            background: #ffe0b2;
             cursor: pointer;
             border-radius: 8px;
             font-size: 20px;
@@ -88,7 +89,7 @@
             width: 100%;
             padding: 12px;
             margin-top: 10px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 17px;
             border: none;
             cursor: pointer;
@@ -99,14 +100,14 @@
             color: white;
             width: 100%;
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 17px;
             border: none;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 12px;
         }
 
-        /* Toast Notification */
+        /* Toast */
         #toast {
             visibility: hidden;
             min-width: 200px;
@@ -131,7 +132,7 @@
             bottom: 50px;
         }
 
-        /* Animate cart count */
+        /* Cart count animation */
         .cart-count.animate {
             animation: bounce 0.3s ease;
         }
@@ -142,12 +143,13 @@
             100% { transform: scale(1); }
         }
     </style>
+
 </head>
 <body>
 
 <!-- NAVBAR -->
 <div class="navbar">
-    <button onclick="window.history.back()">Back</button>
+    <button onclick="window.history.back()">⬅ Back</button>
     <div>
         Cart <span id="cart-count" class="cart-count">0</span>
     </div>
@@ -155,7 +157,6 @@
 
 <div id="food-detail">Loading...</div>
 
-<!-- TOAST BOX -->
 <div id="toast"></div>
 
 <script>
@@ -303,7 +304,7 @@
         window.location.href = "order_page.html";
     }
 
-    loadCartCount();     // <--- NEW
+    loadCartCount();
     loadFoodDetail();
 
 </script>
