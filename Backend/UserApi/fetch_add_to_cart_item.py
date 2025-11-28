@@ -5,7 +5,7 @@ from flask_jwt_extended import jwt_required, get_jwt
 from flask_smorest import Blueprint
 from role_base_authenticator import checkRole
 
-blp = Blueprint('fetch all add to cart items.', __name__, description='user shown all item that will added in add to cart.')
+blp = Blueprint('fetch all add to cart items', __name__, description='user shown all item that will added in add to cart')
 
 
 @blp.route('/fetch-all-item-added-in-cart')
