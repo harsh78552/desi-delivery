@@ -180,13 +180,6 @@
 <div id="menu-container" style="padding: 20px;">Loading...</div>
 
 <script>
-    const token = localStorage.getItem("userToken");
-
-    function redirectToLogin() {
-        localStorage.removeItem("userToken");
-        window.location.href = "user_login.html";
-    }
-
     /* ---------------- TOKEN CHECK ---------------- */
     if (token) {
         try {
