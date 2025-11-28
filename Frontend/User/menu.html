@@ -180,8 +180,33 @@
 <div id="menu-container" style="padding: 20px;">Loading...</div>
 
 <script>
+    const token = localStorage.getItem("userToken");
 
-    /* 🔥 LOAD CART COUNT */
+    function redirectToLogin() {
+        localStorage.removeItem("userToken");
+        window.location.href = "user_login.html";
+    }
+
+    /* ---------------- TOKEN CHECK ---------------- */
+    if (token) {
+        try {
+            const parts = token.split(".");
+            if (parts.length !== 3) throw new Error("Invalid token format");
+
+            const payload = JSON.parse(atob(parts[1]));
+            const expiry = payload.exp;
+            const role = payload.role;
+            const now = Math.floor(Date.now() / 1000);
+
+            if (now > expiry || role !== "user") redirectToLogin();
+        } catch (err) {
+            console.error("Token Error:", err);
+            redirectToLogin();
+        }
+    } else redirectToLogin();
+
+
+    /* ---------------- CART COUNT ---------------- */
     async function loadCartCount() {
         try {
             const res = await fetch("https://desi-delivery.onrender.com/fetch-total-item-add-in-cart", {
@@ -190,7 +215,6 @@
             });
 
             const data = await res.json();
-
             if (res.ok) {
                 document.getElementById("cart-count").innerText = data.item_count || 0;
             }
@@ -199,8 +223,52 @@
         }
     }
 
-    /* 🥗 LOAD MENU */
+
+    /* ---------------- FAST MENU USING CACHE ---------------- */
+    function renderMenu(menuData) {
+        const container = document.getElementById("menu-container");
+        const navbarCategories = document.getElementById("category-list");
+
+        container.innerHTML = "";
+        navbarCategories.innerHTML = "";
+
+        menuData.forEach(cat => {
+            const catTab = document.createElement("span");
+            catTab.innerText = cat.category;
+            catTab.onclick = () => scrollToCategory(cat.category);
+            navbarCategories.appendChild(catTab);
+
+            const box = document.createElement("div");
+            box.classList.add("category-box");
+            box.id = cat.category.replace(/\s+/g, "-");
+
+            const itemsHTML = cat.items.map(item => `
+                <div class="food-card" onclick="viewFoodDetail('${cat.category}', '${item.food_name}')">
+                    <img src="${item.image_url}">
+                    <div>
+                        <h4>${item.food_name}</h4>
+                        <p>${item.descriptions}</p>
+                        <b>Price: ${item.price}</b><br>
+                        <small>Category: ${item.sub_category}</small>
+                    </div>
+                </div>
+            `).join("");
+
+            box.innerHTML = `<h3>${cat.category}</h3>${itemsHTML}`;
+            container.appendChild(box);
+        });
+    }
+
+
     async function loadMenu() {
+        const cachedMenu = localStorage.getItem("menuData");
+
+        // 1️⃣ Load cached menu instantly
+        if (cachedMenu) {
+            renderMenu(JSON.parse(cachedMenu));
+        }
+
+        // 2️⃣ Fetch fresh menu quietly
         try {
             const res = await fetch("https://desi-delivery.onrender.com/menu", {
                 method: "GET",
@@ -212,73 +280,42 @@
 
             const menuData = await res.json();
 
-            const container = document.getElementById("menu-container");
-            const navbarCategories = document.getElementById("category-list");
+            // Save new menu in storage
+            localStorage.setItem("menuData", JSON.stringify(menuData));
 
-            container.innerHTML = "";
-            navbarCategories.innerHTML = "";
-
-            menuData.forEach(cat => {
-
-                const catTab = document.createElement("span");
-                catTab.innerText = cat.category;
-                catTab.onclick = () => scrollToCategory(cat.category);
-                navbarCategories.appendChild(catTab);
-
-                const box = document.createElement("div");
-                box.classList.add("category-box");
-                box.id = cat.category.replace(/\s+/g, "-");
-
-                const itemsHTML = cat.items.map(item => `
-                    <div class="food-card" onclick="viewFoodDetail('${cat.category}', '${item.food_name}')">
-                        <img src="${item.image_url}">
-                        <div>
-                            <h4>${item.food_name}</h4>
-                            <p>${item.descriptions}</p>
-                            <b>Price: ${item.price}</b><br>
-                            <small>Category: ${item.sub_category}</small>
-                        </div>
-                    </div>
-                `).join("");
-
-                box.innerHTML = `<h3>${cat.category}</h3>${itemsHTML}`;
-                container.appendChild(box);
-            });
+            // Render fresh updated UI
+            renderMenu(menuData);
 
         } catch (err) {
             console.error(err);
             showToast("Error loading menu.", "error");
-            document.getElementById("menu-container").innerHTML = "<b>Error loading menu.</b>";
         }
     }
 
-    /* 📌 SCROLL TO CATEGORY */
+
+    /* ---------------- NAVIGATION FUNCTIONS ---------------- */
     function scrollToCategory(catName) {
         const id = catName.replace(/\s+/g, "-");
         document.getElementById(id).scrollIntoView({ behavior: "smooth" });
     }
 
-    /* 📄 VIEW ITEM DETAIL */
     function viewFoodDetail(category, foodName) {
         localStorage.setItem("selectedCategory", category);
         localStorage.setItem("selectedItemName", foodName);
         window.location.href = "item_detail.html";
     }
 
-    /* 👤 PROFILE */
     function goProfile() { window.location.href = "user_profile.html"; }
-
-    /* ℹ️ ABOUT */
     function goAbout() { window.location.href = "about_us.html"; }
 
-    /* 🚪 LOGOUT */
     function logout() {
         localStorage.removeItem("userToken");
         showToast("Logged out successfully!", "success");
         setTimeout(() => window.location.href = "user_login.html", 1000);
     }
 
-    /* 🛒 CART CLICK → REFRESH + REDIRECT */
+
+    /* ---------------- CART CLICK ---------------- */
     async function openCartWithRefresh() {
         try {
             const res = await fetch("https://desi-delivery.onrender.com/fetch-total-item-add-in-cart", {
@@ -287,36 +324,38 @@
             });
 
             const data = await res.json();
-
             if (res.ok) {
                 document.getElementById("cart-count").innerText = data.item_count || 0;
             }
-
-            window.location.href = "cart_page.html";
-
         } catch (err) {
-            console.log("Error refreshing cart:", err);
-            window.location.href = "cart_page.html";
+            console.log("Cart refresh failed:", err);
         }
+
+        window.location.href = "cart_page.html";
     }
 
+
+    /* ---------------- TOAST ---------------- */
     function showToast(message, type="info") {
         const toast = document.createElement("div");
         toast.className = `toast ${type}`;
         toast.innerText = message;
         document.body.appendChild(toast);
-
         setTimeout(() => toast.remove(), 3000);
     }
 
-    /* INIT LOAD */
+
+    /* ---------------- INITIAL LOAD ---------------- */
     loadCartCount();
     loadMenu();
+
+    // Refresh cart count when user returns back from item_detail
     window.addEventListener("pageshow", () => {
-    loadCartCount();
-   });
+        loadCartCount();
+    });
 
 </script>
+
 
 </body>
 </html>
