@@ -5,10 +5,40 @@
     <title>Order Summary - Vyanjanam</title>
     <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
 
+
     <meta name="description"
           content="Review your order summary on Vyanjanam. Confirm food details, quantity, price, and delivery information before placing the order.">
     <meta name="keywords" content="Vyanjanam, Order Summary, Indian Cuisine, Food Delivery, Confirm Order">
     <meta name="robots" content="index, follow">
+    <script>
+        const token = localStorage.getItem("userToken");
+
+        function redirectToLogin() {
+          localStorage.removeItem("userToken");
+          window.location.href = "user_login.html";
+        }
+
+        if (token) {
+          try {
+            const parts = token.split(".");
+            if (parts.length !== 3) throw new Error("Invalid token format");
+
+            const payload = JSON.parse(atob(parts[1]));
+            const expiry = payload.exp;
+            const role = payload.role;
+            const now = Math.floor(Date.now() / 1000);
+
+            if (now > expiry || role !== "user") {
+              redirectToLogin();
+            }
+          } catch (err) {
+            console.error("Token Error:", err);
+            redirectToLogin();
+          }
+        } else {
+          redirectToLogin();
+        }
+    </script>
 
 
     <script type="application/ld+json" id="json-ld">
@@ -93,8 +123,6 @@
 </div>
 
 <script>
-    const token = localStorage.getItem("userToken");
-    if(!token) window.location.href="user_login.html";
 
     const orderData = JSON.parse(localStorage.getItem("orderSummary") || "{}");
     if(!orderData || !orderData.food_name) window.location.href="index.html";

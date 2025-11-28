@@ -3,6 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Place Order</title>
+    <script>
+        const token = localStorage.getItem("userToken");
+
+        function redirectToLogin() {
+          localStorage.removeItem("userToken");
+          window.location.href = "user_login.html";
+        }
+
+        if (token) {
+          try {
+            const parts = token.split(".");
+            if (parts.length !== 3) throw new Error("Invalid token format");
+
+            const payload = JSON.parse(atob(parts[1]));
+            const expiry = payload.exp;
+            const role = payload.role;
+            const now = Math.floor(Date.now() / 1000);
+
+            if (now > expiry || role !== "user") {
+              redirectToLogin();
+            }
+          } catch (err) {
+            console.error("Token Error:", err);
+            redirectToLogin();
+          }
+        } else {
+          redirectToLogin();
+        }
+    </script>
     <style>
         body { font-family: Arial; background:#f4f4f4; padding:20px; }
         .form-box {
@@ -97,7 +126,6 @@
             price: total
         };
 
-        const token = localStorage.getItem("userToken");
 
         const res = await fetch("https://desi-delivery.onrender.com/item-order", {
             method: "POST",
