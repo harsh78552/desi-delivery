@@ -109,7 +109,7 @@
             });
 
             const orders = await res.json();
-            console.log("Backend Response:", orders);
+<!--            console.log("Backend Response:", orders);-->
 
             const container = document.getElementById("ordersContainer");
             document.getElementById("loader").style.display = "none";
@@ -119,7 +119,7 @@
                 container.innerHTML = "<p style='text-align:center;'>No orders found.</p>";
                 return;
             }
-            console.log(orders.order_summary)
+            console.log(order_summary)
 
             // Loop through each order
             orders.order_summary.forEach(o => {
