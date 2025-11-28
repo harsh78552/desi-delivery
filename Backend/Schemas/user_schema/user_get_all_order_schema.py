@@ -9,7 +9,7 @@ class OrderSchema(Schema):
     food_name = fields.String(required=True)
     food_category = fields.String()
     quantity = fields.Int(required=True)
-    total_price = fields.Float(required=True)
+    price = fields.Float(required=True)
 
 
 class UserOrderSchema(Schema):
