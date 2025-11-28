@@ -4,43 +4,42 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
     <title>Menu</title>
+
     <script>
         const token = localStorage.getItem("userToken");
 
         function redirectToLogin() {
-          localStorage.removeItem("userToken");
-          window.location.href = "user_login.html";
+            localStorage.removeItem("userToken");
+            window.location.href = "user_login.html";
         }
 
+        // 🔒 Token validation
         if (token) {
-          try {
-            const parts = token.split(".");
-            if (parts.length !== 3) throw new Error("Invalid token format");
+            try {
+                const parts = token.split(".");
+                if (parts.length !== 3) throw new Error("Invalid token format");
 
-            const payload = JSON.parse(atob(parts[1]));
-            const expiry = payload.exp;
-            const role = payload.role;
-            const now = Math.floor(Date.now() / 1000);
+                const payload = JSON.parse(atob(parts[1]));
+                const expiry = payload.exp;
+                const role = payload.role;
+                const now = Math.floor(Date.now() / 1000);
 
-            if (now > expiry || role !== "user") {
-              redirectToLogin();
+                if (now > expiry || role !== "user") redirectToLogin();
+            } catch (err) {
+                console.error("Token Error:", err);
+                redirectToLogin();
             }
-          } catch (err) {
-            console.error("Token Error:", err);
-            redirectToLogin();
-          }
-        } else {
-          redirectToLogin();
-        }
+        } else redirectToLogin();
     </script>
+
     <style>
         body {
             font-family: Arial;
-            padding: 0;
             margin: 0;
             background: #f2f2f2;
         }
 
+        /* Navbar */
         .navbar {
             width: 100%;
             background: #131921;
@@ -76,6 +75,7 @@
 
         .nav-right {
             display: flex;
+            align-items: center;
             gap: 15px;
         }
 
@@ -91,6 +91,7 @@
         .about-btn { background: #ffa31a; }
         .logout-btn { background: #e65c00; color: white; }
 
+        /* Menu Cards */
         .category-box {
             background: white;
             padding: 15px;
@@ -122,6 +123,7 @@
             border-radius: 8px;
         }
 
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -146,31 +148,62 @@
             80% { opacity: 0.95; }
             100% { opacity: 0; }
         }
-
     </style>
 </head>
+
 <body>
 
 <div class="navbar">
     <div class="nav-left">Food Ordering</div>
 
-    <div class="nav-categories" id="category-list">
-    </div>
+    <div class="nav-categories" id="category-list"></div>
 
     <div class="nav-right">
+
+        <!-- 🛒 Cart -->
+        <div id="cart-area"
+             style="cursor:pointer; display:flex; align-items:center; gap:6px;"
+             onclick="openCartWithRefresh()">
+
+            🛒 Cart
+            <span id="cart-count"
+                  style="background:#28a745; padding:4px 10px; border-radius:50%; font-size:14px;">
+                0
+            </span>
+        </div>
+
         <button class="profile-btn" onclick="goProfile()">Profile</button>
         <button class="about-btn" onclick="goAbout()">About</button>
         <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 </div>
 
+
 <h2 style="padding-left: 25px;">Menu Items</h2>
 <div id="menu-container" style="padding: 20px;">Loading...</div>
 
 <script>
 
-    async function loadMenu() {
+    /* 🔥 LOAD CART COUNT */
+    async function loadCartCount() {
+        try {
+            const res = await fetch("https://desi-delivery.onrender.com/fetch-total-item-add-in-cart", {
+                method: "GET",
+                headers: { "Authorization": "Bearer " + token }
+            });
 
+            const data = await res.json();
+
+            if (res.ok) {
+                document.getElementById("cart-count").innerText = data.item_count || 0;
+            }
+        } catch (err) {
+            console.log("Cart count load failed:", err);
+        }
+    }
+
+    /* 🥗 LOAD MENU */
+    async function loadMenu() {
         try {
             const res = await fetch("https://desi-delivery.onrender.com/menu", {
                 method: "GET",
@@ -181,6 +214,7 @@
             });
 
             const menuData = await res.json();
+
             const container = document.getElementById("menu-container");
             const navbarCategories = document.getElementById("category-list");
 
@@ -200,7 +234,7 @@
 
                 const itemsHTML = cat.items.map(item => `
                     <div class="food-card" onclick="viewFoodDetail('${cat.category}', '${item.food_name}')">
-                        <img src="${item.image_url}" alt="">
+                        <img src="${item.image_url}">
                         <div>
                             <h4>${item.food_name}</h4>
                             <p>${item.descriptions}</p>
@@ -221,57 +255,68 @@
         }
     }
 
+    /* 📌 SCROLL TO CATEGORY */
     function scrollToCategory(catName) {
         const id = catName.replace(/\s+/g, "-");
-        const section = document.getElementById(id);
-        section.scrollIntoView({ behavior: "smooth" });
+        document.getElementById(id).scrollIntoView({ behavior: "smooth" });
     }
 
-    /* 🔥 UPDATED FUNCTION */
+    /* 📄 VIEW ITEM DETAIL */
     function viewFoodDetail(category, foodName) {
         localStorage.setItem("selectedCategory", category);
         localStorage.setItem("selectedItemName", foodName);
         window.location.href = "item_detail.html";
     }
 
-    function goProfile() {
-        const token = localStorage.getItem("userToken");
-        if (!token) {
-            showToast("Please login first!", "error");
-            window.location.href = "user_login.html";
-            return;
-        }
-        window.location.href = "user_profile.html";
-    }
+    /* 👤 PROFILE */
+    function goProfile() { window.location.href = "user_profile.html"; }
 
-    function goAbout() {
-        const token = localStorage.getItem("userToken");
-        if (!token) {
-            showToast("Please login first!", "error");
-            window.location.href = "user_login.html";
-            return;
-        }
-        window.location.href = "about_us.html";
-    }
+    /* ℹ️ ABOUT */
+    function goAbout() { window.location.href = "about_us.html"; }
 
+    /* 🚪 LOGOUT */
     function logout() {
         localStorage.removeItem("userToken");
         showToast("Logged out successfully!", "success");
         setTimeout(() => window.location.href = "user_login.html", 1000);
     }
 
+    /* 🛒 CART CLICK → REFRESH + REDIRECT */
+    async function openCartWithRefresh() {
+        try {
+            const res = await fetch("https://desi-delivery.onrender.com/fetch-total-item-add-in-cart", {
+                method: "GET",
+                headers: { "Authorization": "Bearer " + token }
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                document.getElementById("cart-count").innerText = data.item_count || 0;
+            }
+
+            window.location.href = "cart_page.html";
+
+        } catch (err) {
+            console.log("Error refreshing cart:", err);
+            window.location.href = "cart_page.html";
+        }
+    }
+
+    /* 🔔 TOAST */
     function showToast(message, type="info") {
         const toast = document.createElement("div");
         toast.className = `toast ${type}`;
         toast.innerText = message;
         document.body.appendChild(toast);
 
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
+        setTimeout(() => toast.remove(), 3000);
     }
 
+    /* INIT LOAD */
+    loadCartCount();
     loadMenu();
+
 </script>
 
 </body>
