@@ -9,6 +9,7 @@ from UserApi.get_all_ordered import blp as UserAllOrderedFood
 from UserApi.get_food_data import blp as GetFoodItemBlueprint
 from UserApi.update_profile import blp as ProfileUpdateBlueprint
 from UserApi.user_food_order import blp as UserOrderFoodBlueprint
+from UserApi.fetch_add_to_cart_item import blp as UserFetchItemBlueprint
 from UserApi.user_login import blp as UserLoginBlueprint
 from UserApi.user_profile import blp as UserProfileBlueprint
 from UserApi.user_register import blp as UserRegistrationBlueprint
@@ -75,6 +76,7 @@ api.register_blueprint(GetFoodItemBlueprint)
 api.register_blueprint(UserRegistrationBlueprint)
 api.register_blueprint(UserLoginBlueprint)
 api.register_blueprint(UserProfileBlueprint)
+api.register_blueprint(UserFetchItemBlueprint)
 api.register_blueprint(ProfileUpdateBlueprint)
 api.register_blueprint(UserOrderFoodBlueprint)
 api.register_blueprint(UserAddItemBlueprint)
