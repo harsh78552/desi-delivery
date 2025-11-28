@@ -3,16 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Food Detail</title>
     <style>
+        /* basic page */
+        html, body {
+            height: 100%;
+            box-sizing: border-box;
+        }
+        *, *::before, *::after { box-sizing: inherit; }
+
         body {
             margin: 0;
-            padding: 80px 20px 20px;
+            padding: 80px 20px 20px; /* leave space for fixed navbar */
             font-family: 'Segoe UI', sans-serif;
             background: #f7f7f7;
         }
 
-        /* FIXED NAVBAR */
+        /* NAVBAR (fixed) */
         .navbar {
             width: 100%;
             position: fixed;
@@ -21,27 +29,55 @@
             z-index: 1000;
             background: #232f3e;
             color: white;
-            padding: 14px 20px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 12px;
+            height: 60px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-left button {
+            background: #ff5722;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        /* right group: absolutely positioned so it never gets pushed out */
         .nav-right {
-            margin-left: auto;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 16px;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .cart-count {
+            display: inline-block;
             background: #28a745;
             padding: 4px 10px;
             border-radius: 50%;
             font-size: 14px;
             margin-left: 6px;
+            min-width: 28px;
+            text-align: center;
         }
 
         /* CARD */
@@ -49,7 +85,7 @@
             background: white;
             padding: 20px;
             max-width: 500px;
-            margin: auto;
+            margin: 20px auto;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             text-align: center;
@@ -78,6 +114,7 @@
             border-radius: 8px;
             font-size: 20px;
             font-weight: bold;
+            line-height: 1;
         }
 
         .order-btn {
@@ -139,16 +176,29 @@
             50% { transform: scale(1.4); }
             100% { transform: scale(1); }
         }
-    </style>
 
+        /* responsive tweaks */
+        @media (max-width: 420px) {
+            body { padding: 72px 10px 10px; }
+            .navbar { padding: 10px; height: 56px; }
+            .nav-right { right: 10px; font-size: 14px; }
+            .card { margin: 12px; padding: 16px; }
+            img { height: 200px; }
+        }
+    </style>
 </head>
 <body>
 
 <!-- NAVBAR -->
 <div class="navbar">
-    <button onclick="window.history.back()">⬅ Back</button>
+    <div class="nav-left">
+        <button onclick="window.history.back()">⬅ Back</button>
+        <div style="color:#fff; font-weight:600; font-size:16px;">Food Detail</div>
+    </div>
+
     <div class="nav-right">
-        Cart <span id="cart-count" class="cart-count">0</span>
+        <span>Cart</span>
+        <span id="cart-count" class="cart-count">0</span>
     </div>
 </div>
 
@@ -163,13 +213,14 @@
         localStorage.removeItem("userToken");
         window.location.href = "user_login.html";
     }
+
+    // token check
     if (token) {
         try {
             const parts = token.split(".");
             if (parts.length !== 3) throw new Error("Invalid token format");
             const payload = JSON.parse(atob(parts[1]));
             const now = Math.floor(Date.now() / 1000);
-
             if (now > payload.exp || payload.role !== "user") {
                 redirectToLogin();
             }
@@ -195,6 +246,7 @@
         setTimeout(() => cartSpan.classList.remove("animate"), 300);
     }
 
+    // fetch total items in cart on page load
     async function loadCartCount() {
         try {
             const res = await fetch("https://desi-delivery.onrender.com/fetch-total-item-add-in-cart", {
@@ -203,11 +255,11 @@
                     "Authorization": "Bearer " + token
                 }
             });
-
             const data = await res.json();
-
             if (res.ok) {
                 updateCartCount(data.item_count || 0);
+            } else {
+                if (data && typeof data.item_count !== 'undefined') updateCartCount(data.item_count || 0);
             }
         } catch (err) {
             console.log("Cart fetch failed:", err);
@@ -225,7 +277,7 @@
 
         try {
             const res = await fetch(
-                `https://desi-delivery.onrender.com/menu/item?category=${category}&item_name=${itemName}`,
+                `https://desi-delivery.onrender.com/menu/item?category=${encodeURIComponent(category)}&item_name=${encodeURIComponent(itemName)}`,
                 { headers: { "Authorization": "Bearer " + token } }
             );
 
@@ -234,10 +286,10 @@
 
             document.getElementById("food-detail").innerHTML = `
                 <div class="card">
-                    <img src="${item.image_url}" alt="food">
-                    <h2>${item.food_name}</h2>
-                    <p>${item.descriptions}</p>
-                    <h3>₹${item.price}</h3>
+                    <img src="${item.image_url || ''}" alt="food">
+                    <h2>${item.food_name || ''}</h2>
+                    <p>${item.descriptions || ''}</p>
+                    <h3>₹${item.price || ''}</h3>
 
                     <div class="qty-box">
                         <button class="qty-btn" onclick="changeQty(-1)">−</button>
@@ -250,17 +302,23 @@
                 </div>
             `;
         } catch (err) {
+            console.error(err);
             document.getElementById("food-detail").innerHTML = "<b>Error loading item.</b>";
         }
     }
 
-<!--    function changeQty(value) {-->
-<!--        let qty = parseInt(document.getElementById("qty").innerText);-->
-<!--        qty = Math.max(1, qty + value);-->
-<!--        document.getElementById("qty").innerText = qty;-->
-<!--    }-->
+    // quantity function
+    function changeQty(value) {
+        const qtyEl = document.getElementById("qty");
+        if (!qtyEl) return;
+        let qty = parseInt(qtyEl.innerText) || 1;
+        qty = Math.max(1, qty + value);
+        qtyEl.innerText = qty;
+    }
 
     async function addToCart() {
+        if (!window.currentItem) { showToast("No item selected", "error"); return; }
+
         const cartData = {
             food_category: currentItem.sub_category,
             food_name: currentItem.food_name,
@@ -281,29 +339,35 @@
 
             if (res.ok) {
                 showToast(result.message || "Item added to cart!");
-                updateCartCount(result.item_count || 0);
+                if (typeof result.item_count !== "undefined") {
+                    updateCartCount(result.item_count || 0);
+                } else {
+                    await loadCartCount();
+                }
             } else {
-                showToast(result.message, "error");
+                showToast(result.message || "Failed to add item", "error");
             }
-        } catch {
+        } catch (err) {
+            console.error(err);
             showToast("Something went wrong!", "error");
         }
     }
 
     function openOrderForm() {
-        const qty = document.getElementById("qty").innerText;
+        const qtyEl = document.getElementById("qty");
+        const qty = qtyEl ? qtyEl.innerText : "1";
 
-        localStorage.setItem("orderCategory", currentItem.sub_category);
-        localStorage.setItem("orderItem", currentItem.food_name);
+        localStorage.setItem("orderCategory", currentItem.sub_category || '');
+        localStorage.setItem("orderItem", currentItem.food_name || '');
         localStorage.setItem("orderQty", qty);
-        localStorage.setItem("orderPrice", currentItem.price);
+        localStorage.setItem("orderPrice", currentItem.price || '');
 
         window.location.href = "order_page.html";
     }
 
+    // initial calls
     loadCartCount();
     loadFoodDetail();
-
 </script>
 </body>
 </html>
