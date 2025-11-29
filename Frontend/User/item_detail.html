@@ -261,14 +261,14 @@
         } catch (err) { console.error(err); showToast("Something went wrong!", "error"); }
     }
 
-<!--    function openOrderForm() {-->
-<!--        const qty = document.getElementById("qty")?.innerText || "1";-->
-<!--        localStorage.setItem("orderCategory", currentItem.sub_category || '');-->
-<!--        localStorage.setItem("orderItem", currentItem.food_name || '');-->
-<!--        localStorage.setItem("orderQty", qty);-->
-<!--        localStorage.setItem("orderPrice", currentItem.price || '');-->
-<!--        window.location.href = "order_page.html";-->
-<!--    }-->
+    function openOrderForm() {
+        const qty = document.getElementById("qty")?.innerText || "1";
+        localStorage.setItem("orderCategory", currentItem.sub_category || '');
+        localStorage.setItem("orderItem", currentItem.food_name || '');
+        localStorage.setItem("orderQty", qty);
+        localStorage.setItem("orderPrice", currentItem.price || '');
+        window.location.href = "order_page.html";
+    }
 
     // initial calls in parallel
     Promise.all([loadCartCount(), loadFoodDetail()]);
