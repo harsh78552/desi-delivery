@@ -1,11 +1,11 @@
 from flask import Flask
 from flask_cors import CORS
 
-from Backend.app.UserApi import register_user_blueprint
-from Backend.app.adminApi import register_admin_blueprint
+from UserApi import register_user_blueprint
+from adminApi import register_admin_blueprint
+from routes.health import health_bp
 from .config import configure_app
 from .extensions import api, jwt, mail
-from Backend.app.routes.health import health_bp
 
 
 def create_app():
