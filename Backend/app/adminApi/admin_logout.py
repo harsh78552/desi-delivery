@@ -3,7 +3,7 @@ from flask.views import MethodView
 from flask_jwt_extended import get_jwt, jwt_required, unset_jwt_cookies
 from flask_smorest import Blueprint
 
-from Blocklist import Blocklist
+from .Blocklist import Blocklist
 
 blp = Blueprint('adminApi logout', __name__, description='admin logout api')
 
