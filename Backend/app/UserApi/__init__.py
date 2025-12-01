@@ -1,4 +1,5 @@
 from add_to_cart import blp as UserAddItemBlueprint
+from fetch_add_to_cart_item import blp as UserFetchAllItemBlueprint
 from fetch_add_to_cart_item import blp as UserFetchItemBlueprint
 from get_all_ordered import blp as UserAllOrderedFood
 from get_food_data import blp as GetFoodItemBlueprint
@@ -19,3 +20,4 @@ def register_user_blueprint(api):
     api.register_blueprint(UserOrderFoodBlueprint)
     api.register_blueprint(UserAddItemBlueprint)
     api.register_blueprint(UserAllOrderedFood)
+    api.register_blueprint(UserFetchAllItemBlueprint)
