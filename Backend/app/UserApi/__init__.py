@@ -1,6 +1,6 @@
 from .add_to_cart import blp as UserAddItemBlueprint
 from .fetch_add_to_cart_item import blp as UserFetchAllItemBlueprint
-from .fetch_add_to_cart_item import blp as UserFetchItemBlueprint
+from .fetch_total_item_add_in_cart import blp as UserFetchItemBlueprint
 from .get_all_ordered import blp as UserAllOrderedFood
 from .get_food_data import blp as GetFoodItemBlueprint
 from .update_profile import blp as ProfileUpdateBlueprint
