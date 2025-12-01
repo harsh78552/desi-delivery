@@ -13,9 +13,9 @@ def create_app():
     app.register_blueprint(health_bp)
     configure_app(app)
     CORS(app, resources={r"/*": {"origins": ["https://desi-delivery.vercel.app"]}}, supports_credentials=True)
-    api.__init__app(app)
-    jwt.__init__app(app)
-    mail.__init__app(app)
+    api.init__app(app)
+    jwt.init__app(app)
+    mail.init__app(app)
     register_user_blueprint(app)
     register_admin_blueprint(app)
     return app
