@@ -11,15 +11,15 @@ from .staff_registeration import blp as AdminStaffRegistrationBlueprint
 from .update_staff_data import blp as AdminUpdateStaffBlueprint
 
 
-def register_admin_blueprint(api):
-    api.register_blueprint(AdminLoginBlueprint)
-    api.register_blueprint(AdminLogoutBlueprint)
-    api.register_blueprint(AdminInsertFoodDataBlueprint)
-    api.register_blueprint(AdminStaffRegistrationBlueprint)
-    api.register_blueprint(AdminDeleteStaffBlueprint)
-    api.register_blueprint(AdminUpdateStaffBlueprint)
-    api.register_blueprint(AdminGetAllOrderBlueprint)
-    api.register_blueprint(AdminGetAllFoodBlueprint)
-    api.register_blueprint(AdminEditFoodDataBlueprint)
-    api.register_blueprint(AdminDeleteFoodItemBlueprint)
-    api.register_blueprint(AdminGetAllStaffData)
+def register_admin_blueprint(app_api):
+    app_api.register_blueprint(AdminLoginBlueprint)
+    app_api.register_blueprint(AdminLogoutBlueprint)
+    app_api.register_blueprint(AdminInsertFoodDataBlueprint)
+    app_api.register_blueprint(AdminStaffRegistrationBlueprint)
+    app_api.register_blueprint(AdminDeleteStaffBlueprint)
+    app_api.register_blueprint(AdminUpdateStaffBlueprint)
+    app_api.register_blueprint(AdminGetAllOrderBlueprint)
+    app_api.register_blueprint(AdminGetAllFoodBlueprint)
+    app_api.register_blueprint(AdminEditFoodDataBlueprint)
+    app_api.register_blueprint(AdminDeleteFoodItemBlueprint)
+    app_api.register_blueprint(AdminGetAllStaffData)

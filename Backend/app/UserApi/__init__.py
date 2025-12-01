@@ -10,14 +10,14 @@ from .user_profile import blp as UserProfileBlueprint
 from .user_register import blp as UserRegistrationBlueprint
 
 
-def register_user_blueprint(api):
-    api.register_blueprint(GetFoodItemBlueprint)
-    api.register_blueprint(UserRegistrationBlueprint)
-    api.register_blueprint(UserLoginBlueprint)
-    api.register_blueprint(UserProfileBlueprint)
-    api.register_blueprint(UserFetchItemBlueprint)
-    api.register_blueprint(ProfileUpdateBlueprint)
-    api.register_blueprint(UserOrderFoodBlueprint)
-    api.register_blueprint(UserAddItemBlueprint)
-    api.register_blueprint(UserAllOrderedFood)
-    api.register_blueprint(UserFetchAllItemBlueprint)
+def register_user_blueprint(app_api):
+    app_api.register_blueprint(GetFoodItemBlueprint)
+    app_api.register_blueprint(UserRegistrationBlueprint)
+    app_api.register_blueprint(UserLoginBlueprint)
+    app_api.register_blueprint(UserProfileBlueprint)
+    app_api.register_blueprint(UserFetchItemBlueprint)
+    app_api.register_blueprint(ProfileUpdateBlueprint)
+    app_api.register_blueprint(UserOrderFoodBlueprint)
+    app_api.register_blueprint(UserAddItemBlueprint)
+    app_api.register_blueprint(UserAllOrderedFood)
+    app_api.register_blueprint(UserFetchAllItemBlueprint)
