@@ -1,11 +1,13 @@
-from Database.VyanjanamUserDatabase.add_to_cart import AddToCartDatabase
 # from Schemas.user_schema.add_to_cart_schema import AddToCartSchema
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt
 from flask_smorest import Blueprint
-from role_base_authenticator import checkRole
 
-blp = Blueprint('fetch all add to cart items', __name__, description='user shown all item that will added in add to cart')
+from ..Database.VyanjanamUserDatabase.add_to_cart import AddToCartDatabase
+from ..role_base_authenticator import checkRole
+
+blp = Blueprint('fetch all add to cart items', __name__,
+                description='user shown all item that will added in add to cart')
 
 
 @blp.route('/fetch-all-item-added-in-cart')
@@ -19,5 +21,4 @@ class FetchAllItemAddInCart(MethodView):
         credential = get_jwt()
         email = credential['sub']
         result = self.all_item_db.get_add_to_all_cart_item(email)
-        print(result)
         return result

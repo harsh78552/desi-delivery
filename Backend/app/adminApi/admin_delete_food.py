@@ -3,9 +3,9 @@ from flask.views import MethodView
 from flask_jwt_extended import jwt_required
 from flask_smorest import Blueprint
 
-from Database.VyanjanamFoodDatabase.food_items import FoodDatabase
-from Schemas.admin_schema.admin_delete_food_schema import DeleteFoodItemSchema
-from role_base_authenticator import checkRole
+from ..Database.VyanjanamFoodDatabase.food_items import FoodDatabase
+from ..Schemas.admin_schema.admin_delete_food_schema import DeleteFoodItemSchema
+from ..role_base_authenticator import checkRole
 
 blp = Blueprint('delete food items', __name__, url_prefix="/admin/", description='admin delete food item')
 

@@ -1,8 +1,8 @@
 import hashlib
 from datetime import timedelta
 
-from Database.VyanjanamStaff.staff import StaffDatabase
-from Schemas.admin_schema.admin_login_schema import LoginSchema
+from ..Database.VyanjanamStaff.staff import StaffDatabase
+from ..Schemas.admin_schema.admin_login_schema import LoginSchema
 from flask import jsonify
 from flask.views import MethodView
 from flask_jwt_extended import create_access_token

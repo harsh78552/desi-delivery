@@ -2,8 +2,8 @@ from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt
 from flask_smorest import Blueprint
 
-from Database.VyanjanamUserDatabase.food_order import OrderDatabase
-from role_base_authenticator import checkRole
+from ..Database.VyanjanamUserDatabase.food_order import OrderDatabase
+from ..role_base_authenticator import checkRole
 
 blp = Blueprint('get all order', __name__,url_prefix="/admin/", description=' admin get all order')
 

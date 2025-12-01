@@ -1,12 +1,13 @@
 import hashlib
 from datetime import timedelta
 
-from Database.VyanjanamUserDatabase.user_database import UserDatabase
-from Schemas.user_schema.user_login_schema import UserLoginSchema
-from flask import request, jsonify
+from flask import jsonify
 from flask.views import MethodView
 from flask_jwt_extended import create_access_token, set_access_cookies
 from flask_smorest import Blueprint
+
+from ..Database.VyanjanamUserDatabase.user_database import UserDatabase
+from ..Schemas.user_schema.user_login_schema import UserLoginSchema
 
 blp = Blueprint('user-login', __name__, description='user login api')
 
@@ -17,7 +18,7 @@ class UserLogin(MethodView):
         self.user_db = UserDatabase()
 
     @blp.arguments(UserLoginSchema)
-    def post(self,data):
+    def post(self, data):
         email = data["email"]
         password = data['password']
         password = hashlib.sha256(password.encode('utf-8')).hexdigest()

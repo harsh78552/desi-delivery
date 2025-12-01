@@ -1,8 +1,9 @@
-from Database.VyanjanamUserDatabase.food_order import OrderDatabase
-from Schemas.user_schema.user_get_all_order_schema import UserOrderSchema
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt
 from flask_smorest import Blueprint
+
+from ..Database.VyanjanamUserDatabase.food_order import OrderDatabase
+from ..Schemas.user_schema.user_get_all_order_schema import UserOrderSchema
 
 blp = Blueprint('get all ordered food', __name__, description='get all ordered food api')
 

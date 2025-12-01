@@ -1,9 +1,10 @@
-from Database.VyanjanamUserDatabase.user_database import UserDatabase
-from Schemas.user_schema.user_update_profile_schema import UserUpdateProfileSchema
 from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt
 from flask_smorest import Blueprint
-from role_base_authenticator import checkRole
+
+from ..Database.VyanjanamUserDatabase.user_database import UserDatabase
+from ..Schemas.user_schema.user_update_profile_schema import UserUpdateProfileSchema
+from ..role_base_authenticator import checkRole
 
 blp = Blueprint('user profile update', __name__, 'user profile update api.')
 

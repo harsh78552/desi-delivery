@@ -3,9 +3,9 @@ from flask.views import MethodView
 from flask_jwt_extended import jwt_required
 from flask_smorest import Blueprint
 
-from Database.VyanjanamFoodDatabase.food_items import FoodDatabase
-from Schemas.admin_schema.admin_add_food_data import AddFoodDataSchema
-from role_base_authenticator import checkRole
+from ..Database.VyanjanamFoodDatabase.food_items import FoodDatabase
+from ..Schemas.admin_schema.admin_add_food_data import AddFoodDataSchema
+from ..role_base_authenticator import checkRole
 
 blp = Blueprint('get food data from frontend', __name__, url_prefix="/admin/", description='admin add food items')
 

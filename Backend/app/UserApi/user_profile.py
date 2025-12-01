@@ -1,9 +1,10 @@
-from Database.VyanjanamUserDatabase.user_database import UserDatabase
-from Schemas.user_schema.user_profile_schema import UserProfileSchema
 from flask.views import MethodView
 from flask_jwt_extended import get_jwt, jwt_required
 from flask_smorest import Blueprint
-from role_base_authenticator import checkRole
+
+from ..Database.VyanjanamUserDatabase.user_database import UserDatabase
+from ..Schemas.user_schema.user_profile_schema import UserProfileSchema
+from ..role_base_authenticator import checkRole
 
 blp = Blueprint('user profile', __name__, description='fetch user data')
 

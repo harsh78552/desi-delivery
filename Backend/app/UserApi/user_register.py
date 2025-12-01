@@ -1,8 +1,9 @@
-from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint
-from Schemas.user_schema.user_register_schema import UserRegisterSchema
-from Database.VyanjanamUserDatabase.user_database import UserDatabase
+
+from ..Database.VyanjanamUserDatabase.user_database import UserDatabase
+from ..Schemas.user_schema.user_register_schema import UserRegisterSchema
+
 blp = Blueprint('user registration', __name__, description='user data come from frontend and send to database.')
 
 

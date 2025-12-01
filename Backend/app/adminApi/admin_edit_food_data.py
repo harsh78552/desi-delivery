@@ -3,9 +3,9 @@ from flask.views import MethodView
 from flask_jwt_extended import jwt_required
 from flask_smorest import Blueprint
 
-from Database.VyanjanamFoodDatabase.food_items import FoodDatabase
-from Schemas.admin_schema.admin_edit_food_data import EditFoodItemSchema
-from role_base_authenticator import checkRole
+from ..Database.VyanjanamFoodDatabase.food_items import FoodDatabase
+from ..Schemas.admin_schema.admin_edit_food_data import EditFoodItemSchema
+from ..role_base_authenticator import checkRole
 
 blp = Blueprint('edit food item', __name__, url_prefix="/admin/", description='admin edit food item')
 

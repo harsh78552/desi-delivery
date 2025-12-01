@@ -3,9 +3,9 @@ from flask.views import MethodView
 from flask_jwt_extended import jwt_required, get_jwt
 from flask_smorest import Blueprint
 
-from Database.VyanjanamStaff.staff import StaffDatabase
-from Schemas.admin_schema.admin_delete_staff import DeleteStaffSchema
-from role_base_authenticator import checkRole
+from ..Database.VyanjanamStaff.staff import StaffDatabase
+from ..Schemas.admin_schema.admin_delete_staff import DeleteStaffSchema
+from ..role_base_authenticator import checkRole
 
 blp = Blueprint('delete staff data', __name__,url_prefix="/admin/", description='admin delete staff data api')
 

@@ -2,9 +2,9 @@ from flask.views import MethodView
 from flask_jwt_extended import jwt_required
 from flask_smorest import Blueprint
 
-from Database.VyanjanamStaff.staff import StaffDatabase
-from Schemas.admin_schema.admin_get_all_staff import GetAllStaffSchema, GetStaffRelatedStuffSchema
-from role_base_authenticator import checkRole
+from ..Database.VyanjanamStaff.staff import StaffDatabase
+from ..Schemas.admin_schema.admin_get_all_staff import GetAllStaffSchema, GetStaffRelatedStuffSchema
+from ..role_base_authenticator import checkRole
 
 blp = Blueprint('get all staff data', __name__, url_prefix="/admin/", description='admin seen all staff data')
 
