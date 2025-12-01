@@ -3,7 +3,7 @@ from flask_cors import CORS
 
 from .UserApi import register_user_blueprint
 from .adminApi import register_admin_blueprint
-from routes.health import health_bp
+from .routes.health import health_bp
 from .config import configure_app
 from .extensions import api, jwt, mail
 
