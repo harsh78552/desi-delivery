@@ -216,8 +216,7 @@
         }
 
         try {
-            const res = await fetch(`https://desi-delivery.onrender.com/menu/item?category=${encodeURIComponent(category)}&item_name=${encodeURIComponent(itemName)}`, {
-                headers: { "Authorization": "Bearer " + token }
+            const res = await fetch(`https://desi-delivery.onrender.com/menu/item?category=${encodeURIComponent(category)}&item_name=${encodeURIComponent(itemName)}`
             });
             const item = await res.json();
             renderItem(item);
