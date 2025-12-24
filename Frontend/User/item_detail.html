@@ -5,6 +5,7 @@
     <link rel="icon" type="image/png/jpg" href="../image/myImage.jpg">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Food Detail</title>
+
     <style>
         html, body { height: 100%; box-sizing: border-box; }
         *, *::before, *::after { box-sizing: inherit; }
@@ -32,7 +33,10 @@
         }
 
         .nav-left span {
-            color:white; cursor: pointer; font-weight: bold; font-size: 20px;
+            color:white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 20px;
         }
 
         .nav-right {
@@ -40,17 +44,19 @@
             right: 20px;
             top: 50%;
             transform: translateY(-50%);
-            display: flex; align-items: center; gap: 8px;
-            color:white; font-size: 16px; font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color:white;
+            font-size: 16px;
+            font-weight: 600;
         }
 
         .cart-count {
-            display: inline-block;
             background: #28a745;
             padding: 4px 10px;
             border-radius: 50%;
             font-size: 14px;
-            margin-left: 6px;
             min-width: 28px;
             text-align: center;
         }
@@ -59,20 +65,44 @@
             background: white;
             padding: 20px;
             max-width: 500px;
-            margin: 20px auto;
+            margin: auto;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             text-align: center;
         }
 
-        img { width: 100%; height: 260px; object-fit: cover; border-radius: 12px; }
+        img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
 
-        .qty-box { display: flex; justify-content: center; align-items: center; gap: 18px; margin: 15px 0; }
+        .qty-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            margin: 15px 0;
+        }
 
-        .qty-btn { padding: 10px 16px; border: none; background: #ffe0b2; cursor: pointer; border-radius: 8px; font-size: 20px; }
+        .qty-btn {
+            padding: 10px 16px;
+            border: none;
+            background: #ffe0b2;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 20px;
+        }
 
         .order-btn, .cart-btn {
-            color: white; width: 100%; padding: 12px; border-radius: 10px; font-size: 17px; border: none; cursor: pointer;
+            color: white;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 17px;
+            border: none;
+            cursor: pointer;
             margin-top: 10px;
         }
 
@@ -94,46 +124,34 @@
             font-size: 16px;
             z-index: 10000;
             opacity: 0;
-            transition: opacity 0.4s, bottom 0.4s;
+            transition: 0.4s;
         }
 
-        #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
-
-        .cart-count.animate { animation: bounce 0.3s ease; }
-
-        @keyframes bounce { 0% { transform: scale(1); } 50% { transform: scale(1.4); } 100% { transform: scale(1); } }
-
-        /* Skeleton */
-        .skeleton { background: #eee; border-radius: 6px; }
-        .skeleton-img { width: 100%; height: 260px; border-radius: 12px; margin-bottom: 12px; }
-        .skeleton-text { height: 18px; width: 50%; margin: 10px auto; }
-        .skeleton-price { height: 22px; width: 30%; margin: 10px auto; }
-        .skeleton-btn { height: 40px; width: 80%; margin: 12px auto; border-radius: 8px; }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
     </style>
 </head>
+
 <body>
 
+<!-- NAVBAR -->
 <div class="navbar">
-    <div class="nav-left"><span onclick="window.history.back()">back</span></div>
+    <div class="nav-left">
+        <span onclick="window.history.back()">Back</span>
+    </div>
     <div class="nav-right">
         <span>Cart</span>
         <span id="cart-count" class="cart-count">0</span>
     </div>
 </div>
 
+<!-- FOOD DETAIL -->
 <div id="food-detail">
-    <!-- skeleton loading -->
     <div class="card">
-        <div class="skeleton skeleton-img"></div>
-        <div class="skeleton skeleton-text"></div>
-        <div class="skeleton skeleton-text"></div>
-        <div class="skeleton skeleton-price"></div>
-        <div class="qty-box">
-            <div class="skeleton skeleton-btn"></div>
-            <div class="skeleton skeleton-btn"></div>
-        </div>
-        <div class="skeleton skeleton-btn"></div>
-        <div class="skeleton skeleton-btn"></div>
+        <p>Loading...</p>
     </div>
 </div>
 
@@ -143,134 +161,109 @@
     const token = localStorage.getItem("userToken");
 
     function redirectToLogin() {
-        localStorage.removeItem("userToken");
         window.location.href = "user_login.html";
     }
 
-    // token check
-    if (!token) redirectToLogin();
-    else {
+    /* 🔐 LOGIN CHECK (USED ONLY ON ACTIONS) */
+    function isUserLoggedIn() {
+        if (!token) return false;
+
         try {
-            const parts = token.split(".");
-            const payload = JSON.parse(atob(parts[1]));
-            if (!payload || Math.floor(Date.now()/1000) > payload.exp || payload.role !== "user") redirectToLogin();
-        } catch { redirectToLogin(); }
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            if (payload.role !== "user") return false;
+            if (Math.floor(Date.now() / 1000) > payload.exp) return false;
+            return true;
+        } catch {
+            return false;
+        }
     }
 
-    function showToast(message, type = "success") {
+    function showToast(msg, type = "success") {
         const toast = document.getElementById("toast");
-        toast.innerHTML = message;
+        toast.innerText = msg;
         toast.style.background = type === "error" ? "#e63946" : "#28a745";
-        toast.className = "show";
+        toast.classList.add("show");
         setTimeout(() => toast.classList.remove("show"), 2500);
-    }
-
-    function updateCartCount(count) {
-        const cartSpan = document.getElementById("cart-count");
-        cartSpan.innerText = count;
-        cartSpan.classList.add("animate");
-        setTimeout(() => cartSpan.classList.remove("animate"), 300);
-    }
-
-    async function loadCartCount() {
-        try {
-            const res = await fetch("https://desi-delivery.onrender.com/fetch-total-item-add-in-cart", {
-                headers: { "Authorization": "Bearer " + token }
-            });
-            const data = await res.json();
-            if (res.ok) updateCartCount(data.item_count || 0);
-        } catch (err) { console.log("Cart fetch failed:", err); }
     }
 
     function renderItem(item) {
         window.currentItem = item;
+
         document.getElementById("food-detail").innerHTML = `
             <div class="card">
-                <img src="${item.image_url || ''}" alt="food">
-                <h2>${item.food_name || ''}</h2>
-                <p>${item.descriptions || ''}</p>
-                <h3>₹${item.price || ''}</h3>
+                <img src="${item.image_url}">
+                <h2>${item.food_name}</h2>
+                <p>${item.descriptions}</p>
+                <h3>₹${item.price}</h3>
+
                 <div class="qty-box">
                     <button class="qty-btn" onclick="changeQty(-1)">−</button>
-                    <span id="qty" style="font-size:18px;">1</span>
+                    <span id="qty">1</span>
                     <button class="qty-btn" onclick="changeQty(1)">+</button>
                 </div>
+
                 <button class="cart-btn" onclick="addToCart()">Add to Cart</button>
-                <button class="order-btn" onclick="openOrderForm()">Order Now</button>
+                <button class="order-btn" onclick="orderNow()">Order Now</button>
             </div>
         `;
+    }
+
+    function changeQty(val) {
+        const qty = document.getElementById("qty");
+        let count = parseInt(qty.innerText);
+        qty.innerText = Math.max(1, count + val);
+    }
+
+    async function addToCart() {
+        if (!isUserLoggedIn()) {
+            redirectToLogin();
+            return;
+        }
+
+        const res = await fetch("https://desi-delivery.onrender.com/item-add-to-cart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+                food_category: currentItem.sub_category,
+                food_name: currentItem.food_name,
+                image_url: currentItem.image_url
+            })
+        });
+
+        const data = await res.json();
+        if (res.ok) showToast("Item added to cart");
+        else showToast(data.message, "error");
+    }
+
+    function orderNow() {
+        if (!isUserLoggedIn()) {
+            redirectToLogin();
+            return;
+        }
+
+        localStorage.setItem("orderItem", currentItem.food_name);
+        localStorage.setItem("orderQty", document.getElementById("qty").innerText);
+        localStorage.setItem("orderPrice", currentItem.price);
+
+        window.location.href = "order_page.html";
     }
 
     async function loadFoodDetail() {
         const category = localStorage.getItem("selectedCategory");
         const itemName = localStorage.getItem("selectedItemName");
 
-        if (!category || !itemName) {
-            document.getElementById("food-detail").innerHTML = "<b>No item selected.</b>";
-            return;
-        }
-
-        const cachedItem = localStorage.getItem(`cachedItem-${category}-${itemName}`);
-        if (cachedItem) {
-            renderItem(JSON.parse(cachedItem));
-        }
-
-        try {
-            const res = await fetch(`https://desi-delivery.onrender.com/menu/item?category=${encodeURIComponent(category)}&item_name=${encodeURIComponent(itemName)}`
-            });
-            const item = await res.json();
-            renderItem(item);
-            localStorage.setItem(`cachedItem-${category}-${itemName}`, JSON.stringify(item));
-        } catch (err) {
-            console.error(err);
-            if (!cachedItem) document.getElementById("food-detail").innerHTML = "<b>Error loading item.</b>";
-        }
+        const res = await fetch(
+            `https://desi-delivery.onrender.com/menu/item?category=${category}&item_name=${itemName}`
+        );
+        const item = await res.json();
+        renderItem(item);
     }
 
-    function changeQty(value) {
-        const qtyEl = document.getElementById("qty");
-        if (!qtyEl) return;
-        let qty = parseInt(qtyEl.innerText) || 1;
-        qty = Math.max(1, qty + value);
-        qtyEl.innerText = qty;
-    }
-
-    async function addToCart() {
-        if (!window.currentItem) { showToast("No item selected", "error"); return; }
-        const cartData = {
-            food_category: currentItem.sub_category,
-            food_name: currentItem.food_name,
-            image_url: currentItem.image_url
-        };
-        try {
-            const res = await fetch("https://desi-delivery.onrender.com/item-add-to-cart", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-                body: JSON.stringify(cartData)
-            });
-            const result = await res.json();
-            if (res.ok) {
-                showToast(result.message || "Item added to cart!");
-                if (result.item_count !== undefined) updateCartCount(result.item_count);
-                else await loadCartCount();
-            } else showToast(result.message || "Failed to add item", "error");
-        } catch (err) { console.error(err); showToast("Something went wrong!", "error"); }
-    }
-
-    function openOrderForm() {
-        const qty = document.getElementById("qty")?.innerText || "1";
-        localStorage.setItem("orderCategory", currentItem.sub_category || '');
-        localStorage.setItem("orderItem", currentItem.food_name || '');
-        localStorage.setItem("orderQty", qty);
-        localStorage.setItem("orderPrice", currentItem.price || '');
-        window.location.href = "order_page.html";
-    }
-
-    // initial calls in parallel
-    Promise.all([loadCartCount(), loadFoodDetail()]);
+    loadFoodDetail();
 </script>
+
 </body>
 </html>
