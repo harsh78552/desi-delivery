@@ -1,11 +1,10 @@
 from flask import request
 from flask.views import MethodView
-from flask_jwt_extended import jwt_required, get_jwt
 from flask_smorest import Blueprint
 
 from ..Database.VyanjanamFoodDatabase.food_items import FoodDatabase
 from ..Schemas.user_schema.get_all_item_schema import FoodSchema
-from ..role_base_authenticator import checkRole
+
 
 blp = Blueprint('get food', __name__, description="get food api..")
 
@@ -15,7 +14,6 @@ class Menu(MethodView):
     def __init__(self):
         self.menu_data = FoodDatabase()
 
-    @checkRole('user')
     @blp.response(200, FoodSchema(many=True))
     def get(self):
         menu_data = self.menu_data.get_food_data()
@@ -26,6 +24,7 @@ class Menu(MethodView):
 class MenuItem(MethodView):
     def __init__(self):
         self.item_data = FoodDatabase()
+        
     def get(self):
         category = request.args.get('category')
         food_name = request.args.get('item_name')
