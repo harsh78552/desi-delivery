@@ -69,33 +69,7 @@
         <button class="admin" onclick="window.location.href='admin/admin_login.html'">Admin</button>
     </div>
 
-    <div id="healthStatus">Checking API health...</div>
+    
 
-    <script>
-        // Change this URL to your backend URL
-        const API_HEALTH_URL = "https://desi-delivery.onrender.com/health";
-
-        async function checkHealth() {
-            const statusEl = document.getElementById("healthStatus");
-            try {
-                const res = await fetch(API_HEALTH_URL);
-                const data = await res.json();
-                if (res.ok) {
-                    statusEl.innerText = `API Health: ✅ ${data.message}`;
-                    statusEl.style.background = "rgba(0,128,0,0.3)";
-                } else {
-                    statusEl.innerText = `API Health: ❌ ${data.message || "Something went wrong"}`;
-                    statusEl.style.background = "rgba(255,0,0,0.3)";
-                }
-            } catch (err) {
-                console.error("Health check error:", err);
-                statusEl.innerText = "API Health: ❌ Cannot reach server!";
-                statusEl.style.background = "rgba(255,0,0,0.3)";
-            }
-        }
-
-        // Check health when page loads
-        checkHealth();
-    </script>
 </body>
 </html>
