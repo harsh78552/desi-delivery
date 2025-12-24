@@ -225,7 +225,6 @@
 
     /* -------- ACTIONS (LOGIN REQUIRED) -------- */
     function viewFoodDetail(c, f) {
-        if (!requireLogin()) return;
         localStorage.setItem("selectedCategory", c);
         localStorage.setItem("selectedItemName", f);
         window.location.href = "item_detail.html";
