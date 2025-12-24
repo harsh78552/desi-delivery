@@ -15,7 +15,6 @@ class Menu(MethodView):
     def __init__(self):
         self.menu_data = FoodDatabase()
 
-    @jwt_required(locations=['headers'])
     @checkRole('user')
     @blp.response(200, FoodSchema(many=True))
     def get(self):
@@ -27,9 +26,6 @@ class Menu(MethodView):
 class MenuItem(MethodView):
     def __init__(self):
         self.item_data = FoodDatabase()
-
-    @jwt_required(locations=['headers'])
-    @checkRole('user')
     def get(self):
         category = request.args.get('category')
         food_name = request.args.get('item_name')
