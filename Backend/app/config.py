@@ -15,11 +15,7 @@ def configure_app(app):
     app.config['JWT_HEADER_TYPE'] = 'Bearer'
 
     # Email
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-    app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = 'ht728350@gmail.com'
-    app.config['MAIL_PASSWORD'] = "hnzx xeiq sqcj vglh"
+    
 
     app.config['API_SPEC_OPTIONS'] = {
         "components": {
